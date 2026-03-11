@@ -1,6 +1,5 @@
-// src/detectEnvironment.js
-import fs from "fs";
-import path from "path";
+const fs = require("fs");
+const path = require("path");
 
 const detectEnvironments = () => {
   const root = process.cwd();
@@ -13,4 +12,4 @@ const detectEnvironments = () => {
   return envs;
 };
 
-export default detectEnvironments;
+module.exports = detectEnvironments;

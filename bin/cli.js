@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import init from "../src/commands/init";
+const init = require("../src/commands/init");
 
 const command = process.argv[2];
 
