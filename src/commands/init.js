@@ -61,8 +61,8 @@ const init = async () => {
 
   const packageRoot = path.join(__dirname, "../../");
   const templateRoot = path.join(packageRoot, "templates");
-  // destino depende del env
-  const targetRoot = path.join(projectRoot, ENV_TARGET_MAP[env]);
+  const targetRoot = path.join(projectRoot, `.${env}`);
+
   if (!fs.existsSync(templateRoot)) {
     console.log(`❌ Templates folder not found`);
     return;
