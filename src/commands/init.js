@@ -38,8 +38,8 @@ const selectEnvironment = async (envs) => {
       type: "list",
       name: "env",
       message: "Multiple AI environments detected. Choose where to install:",
-      choices: envs
-    }
+      choices: envs,
+    },
   ]);
 
   return answers.env;
