@@ -1,8 +1,8 @@
-const fs = require("fs")
-const path = require("path")
-const inquirer = require("inquirer")
+import fs from "fs";
+import path from "path";
+import inquirer from "inquirer";
 
-const detectEnvironments = require("../detectEnvironment")
+import detectEnvironments from "../detectEnvironment.js";
 
 const copyDir = (src, dest) => {
   if (!fs.existsSync(src)) return
@@ -82,4 +82,4 @@ const init = async () => {
   console.log(`\n✅ AI Dev Pipeline successfully installed in .${env}`)
 }
 
-module.exports = init
+export default init;
