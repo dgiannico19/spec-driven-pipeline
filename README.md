@@ -1,20 +1,22 @@
-# AI Dev Pipeline
+# AI Dev Pipeline 🚀
 
 [![npm](https://img.shields.io/npm/v/ai-dev-pipeline.svg)](https://www.npmjs.com/package/ai-dev-pipeline)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**AI Dev Pipeline** es una CLI que instala un pipeline de desarrollo de AI estructurado en tu proyecto.  
-Detecta automáticamente el entorno AI y copia los **agents, rules y skills** necesarios para que tu equipo tenga un flujo de trabajo consistente con asistencia AI, desacoplado de herramientas externas y basado en el estándar de documentación evolutiva.
+**AI Dev Pipeline** es una interfaz de línea de comandos (CLI) diseñada para instalar un flujo de trabajo de Inteligencia Artificial estructurado en tu repositorio. 
 
-Actualmente soporta:
-* **Cursor** (Rules & Agents)
-* **Windsurf**
+Detecta automáticamente tu editor (IDE) y despliega **agentes, reglas y habilidades (skills)** que permiten a la IA razonar como un equipo de ingeniería senior, separando el análisis de la ejecución.
+
+### 🛠 Entornos Soportados
+* **Cursor** (Reglas y Agentes personalizados)
+* **Windsurf** (Cascade Context)
 * **Claude Code**
 
 ---
 
-## Install
+## 📥 Instalación
 
-Ejecutar directamente con `npx`:
+Puedes ejecutarlo directamente sin instalar usando `npx`:
 
 ```bash
 npx ai-dev-pipeline init
@@ -27,68 +29,64 @@ ai-dev-pipeline init
 ```
 
 ---
+## 📁 Estructura del Workflow (Directorio `ai/`)
 
-🚀 The AI-Native Workflow (ai/ directory)
-El pipeline establece una fuente de verdad en la carpeta ai/ de tu proyecto. Este flujo separa el pensamiento de la ejecución:
+El pipeline establece una **fuente de verdad única** dentro de la carpeta `ai/` de tu proyecto. Esto evita "ensuciar" la raíz y mantiene el contexto organizado para el IDE:
 
-ai/changes/: Espacio de trabajo activo para la épica actual.
-
-ai/specs/: Librería de diseños técnicos actualizados y manuales de componentes.
-
-ai/archive/: Memoria histórica de decisiones (Contexto para futuras IAs).
-
----
-
-🤖 Pipeline Steps (The 7 Agents)
-Al instalar, dispondrás de los siguientes agentes que orquestan el desarrollo de punta a punta:
-
-🏗️ Step 1: Proposal Initiator
-Función: Analiza el ticket, épica o historia de usuario.
-Output: Crea la carpeta en ai/changes/ e inicia el proposal.md. Define el "Why" (negocio) y las nuevas Capabilities del sistema.
-
-🔍 Step 2: Exploration Analyzer
-Función: Escanea el repositorio real buscando puntos de impacto.
-Output: El archivo exploration.md. Identifica archivos afectados, comportamiento actual y brechas técnicas (gaps).
-
-🧠 Step 3: Design Builder
-Función: El arquitecto del flujo. Cruza negocio y técnica para dictar la solución.
-Output: * design.md: Decisiones de arquitectura, riesgos y plan de migración.
-
-tasks.md: Checklist atómico de tareas con formato [ ] para ejecución.
-
-📘 Step 4: QA & Usage Generator
-Función: Traduce el diseño en instrucciones de uso y pruebas.
-Output: testing.md. Contiene una matriz de pruebas (HP, Edge Cases) y ejemplos de uso (YAML/JSON) para validar sin leer código.
-
-🔨 Step 5: Dev Executor
-Función: El agente programador. Implementa el código real.
-Output: Código productivo alineado a FSD y actualización de progreso marcando con [x] las tareas completadas en tasks.md.
-
-🛡️ Step 6: Strict Reviewer
-Función: El Gatekeeper técnico.
-Output: Reporte de auditoría. Valida que el código coincida con el design.md y que todas las tareas en tasks.md estén tildadas. Bloquea si hay errores de estilo.
-
-📦 Step 7: Commit Splitter & Archiver
-Función: El notario de cierre. Organiza Git y preserva la documentación.
-Output: * Plan de commits atómicos bajo Conventional Commits.
-
-Mueve la carpeta de ai/changes/ a ai/archive/ para liberar el espacio de trabajo.
+| Directorio | Propósito |
+| :--- | :--- |
+| **`ai/changes/`** | **Espacio activo.** Aquí es donde los agentes trabajan en la épica actual. |
+| **`ai/specs/`** | **Librería de diseño.** Contiene la documentación técnica final de tus componentes. |
+| **`ai/archive/`** | **Memoria histórica.** Épicas finalizadas que sirven de contexto para futuras tareas. |
 
 ---
 
-🧠 Philosophy: The Archive as AI Memory
-¿Por qué archivamos? El programador humano rara vez vuelve a leer documentación de hace 6 meses, pero la IA del futuro sí.
+## 🤖 Los 7 Agentes del Pipeline
 
-Al mantener un ai/archive/ estructurado:
+Al inicializar el proyecto, los siguientes agentes estarán disponibles en tu IDE para ser invocados mediante comandos de chat:
 
-Contexto Infinito: En futuros cambios, la IA consultará el histórico para entender por qué se tomó una decisión técnica.
+### 1. 🏗️ **Iniciador de Propuesta** (Step 1)
+* **Misión:** Analizar el ticket o historia de usuario desde el punto de vista de negocio.
+* **Resultado:** Crea la carpeta de la épica y el archivo `proposal.md`. Define el **"Por qué"** (negocio) y las nuevas **Capabilities** (capacidades) del sistema.
 
-Evita Alucinaciones: La IA no inventará reglas; se basará en tu historial real de diseños.
+### 🔍 2. **Analizador de Exploración** (Step 2)
+* **Misión:** Escanear el código real para ver dónde impactará el cambio.
+* **Resultado:** Genera `exploration.md`. Identifica archivos afectados, lógica actual y brechas técnicas.
 
-Onboarding: Un nuevo desarrollador (o IA) entiende el sistema leyendo la evolución de los archivos en ai/.
+### 🧠 3. **Constructor de Diseño** (Step 3)
+* **Misión:** El arquitecto. Decide **CÓMO** se resolverá el problema.
+* **Resultado:** Genera `design.md` (decisiones técnicas) y `tasks.md` (el checklist de tareas `[ ]`).
 
-Contributing
-¡Contribuciones bienvenidas! Abrir issues o pull requests para colaborar en nuevos agentes o soporte para más entornos AI.
+### 📘 4. **Generador de QA y Manuales** (Step 4)
+* **Misión:** Traducir el diseño en pasos de prueba y documentación de uso.
+* **Resultado:** Genera `testing.md`. Incluye una matriz de pruebas y ejemplos de esquemas (YAML/JSON) para validar sin leer código.
 
-License
-MIT
+### 🔨 5. **Ejecutor de Desarrollo** (Step 5)
+* **Misión:** El programador. Escribe el código siguiendo el diseño.
+* **Resultado:** Implementa cambios en el repo y **marca con `[x]`** las tareas completadas en el `tasks.md`.
+
+### 🛡️ 6. **Revisor Estricto** (Step 6)
+* **Misión:** El guardián de calidad (Gatekeeper).
+* **Resultado:** Reporte de auditoría. Bloquea el proceso si el código no coincide con el diseño o si faltan tareas por tildar. Detecta errores de estilo (`const`, early returns, etc).
+
+### 📦 7. **Organizador de Commits y Archivo** (Step 7)
+* **Misión:** Notario de cierre. Organiza la historia y limpia el área de trabajo.
+* **Resultado:** Genera el plan de **Conventional Commits** y mueve la épica de `changes/` a `archive/` para liberar el espacio de trabajo.
+
+---
+
+## 🧠 Filosofía: El Archivo como Memoria IA
+
+¿Por qué archivamos? El desarrollador humano olvida, pero **la IA del futuro tiene memoria infinita**.
+
+* **Contexto Permanente:** En futuros cambios, la IA consultará el `archive/` para entender por qué se tomó una decisión técnica hace meses.
+* **Cero Alucinaciones:** La IA no inventará reglas; se basará en el historial documentado de tu propio proyecto.
+* **Onboarding Veloz:** Cualquier nuevo integrante del equipo (humano o IA) puede entender la arquitectura leyendo la evolución en la carpeta `ai/`.
+
+---
+
+## 🤝 Contribuciones
+¡Las ideas son bienvenidas! Si quieres agregar soporte para nuevos IDEs o mejorar los prompts de los agentes, abre un **Issue** o envía un **Pull Request**.
+
+## 📄 Licencia
+Distribuido bajo la licencia **MIT**.
