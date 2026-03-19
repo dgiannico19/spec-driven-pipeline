@@ -3,11 +3,12 @@
 [![npm](https://img.shields.io/npm/v/ai-dev-pipeline.svg)](https://www.npmjs.com/package/ai-dev-pipeline)
 
 **AI Dev Pipeline** es una CLI que instala un pipeline de desarrollo de AI estructurado en tu proyecto.  
-Detecta automáticamente el entorno AI y copia los **agents, rules y skills** necesarios para que tu equipo tenga un flujo de trabajo consistente con asistencia AI.
+Detecta automáticamente el entorno AI y copia los **agents, rules y skills** necesarios para que tu equipo tenga un flujo de trabajo consistente con asistencia AI, desacoplado de herramientas externas y basado en el estándar de documentación evolutiva.
 
 Actualmente soporta:
-
-* Cursor
+* **Cursor** (Rules & Agents)
+* **Windsurf**
+* **Claude Code**
 
 ---
 
@@ -20,108 +21,74 @@ npx ai-dev-pipeline init
 
 O instalar globalmente:
 
+Bash
 npm install -g ai-dev-pipeline
-
-Luego correr:
-
 ai-dev-pipeline init
 ```
 
-## Usage
+---
 
-Desde la raíz del proyecto:
+🚀 The AI-Native Workflow (ai/ directory)
+El pipeline establece una fuente de verdad en la carpeta ai/ de tu proyecto. Este flujo separa el pensamiento de la ejecución:
 
-```bash
-ai-dev-pipeline init
-```
+ai/changes/: Espacio de trabajo activo para la épica actual.
 
-El CLI hará:
+ai/specs/: Librería de diseños técnicos actualizados y manuales de componentes.
 
-- Detectar el entorno AI en tu proyecto.
-- Si hay varios entornos, preguntar cuál usar.
-- Instalar el pipeline en el entorno seleccionado.
+ai/archive/: Memoria histórica de decisiones (Contexto para futuras IAs).
 
-Ejemplo:
+---
 
-```
-? Multiple AI environments detected. Choose where to install:
-❯ cursor (Unico soportado por el momento)
-  claude
-```
+🤖 Pipeline Steps (The 7 Agents)
+Al instalar, dispondrás de los siguientes agentes que orquestan el desarrollo de punta a punta:
 
-## What Gets Installed
+1. 🏗️ Step 1: Proposal Initiator
+Función: Analiza el ticket, épica o historia de usuario.
+Output: Crea la carpeta en ai/changes/ e inicia el proposal.md. Define el "Why" (negocio) y las nuevas Capabilities del sistema.
 
-El CLI copia los archivos del pipeline dentro del directorio del entorno AI.
-Ejemplo:
+2. 🔍 Step 2: Exploration Analyzer
+Función: Escanea el repositorio real buscando puntos de impacto.
+Output: El archivo exploration.md. Identifica archivos afectados, comportamiento actual y brechas técnicas (gaps).
 
-```
-.cursor
-   agents
-   rules
-   skills
-```
+🧠 Step 3: Design Builder
+Función: El arquitecto del flujo. Cruza negocio y técnica para dictar la solución.
+Output: * design.md: Decisiones de arquitectura, riesgos y plan de migración.
 
-Estos archivos definen el flujo de trabajo AI del proyecto.
+tasks.md: Checklist atómico de tareas con formato [ ] para ejecución.
 
-Nunca sobrescribe archivos existentes. Si un archivo ya existe:
+📘 Step 4: QA & Usage Generator
+Función: Traduce el diseño en instrucciones de uso y pruebas.
+Output: testing.md. Contiene una matriz de pruebas (HP, Edge Cases) y ejemplos de uso (YAML/JSON) para validar sin leer código.
 
-```
-⚠️ Skipped existing file
-```
+🔨 Step 5: Dev Executor
+Función: El agente programador. Implementa el código real.
+Output: Código productivo alineado a FSD y actualización de progreso marcando con [x] las tareas completadas en tasks.md.
 
-## Supported Environments
+🛡️ Step 6: Strict Reviewer
+Función: El Gatekeeper técnico.
+Output: Reporte de auditoría. Valida que el código coincida con el design.md y que todas las tareas en tasks.md estén tildadas. Bloquea si hay errores de estilo.
 
-El CLI detecta entornos buscando en la raíz del proyecto:
+📦 Step 7: Commit Splitter & Archiver
+Función: El notario de cierre. Organiza Git y preserva la documentación.
+Output: * Plan de commits atómicos bajo Conventional Commits.
 
-- `.cursor`
-- `.claude`
-- `.windsurf`
+Mueve la carpeta de ai/changes/ a ai/archive/ para liberar el espacio de trabajo.
 
-Si no encuentra ninguno, la instalación se detiene.
+---
 
-## Example Project Structure
+🧠 Philosophy: The Archive as AI Memory
+¿Por qué archivamos? El programador humano rara vez vuelve a leer documentación de hace 6 meses, pero la IA del futuro sí.
 
-Después de instalar, el proyecto podría verse así:
+Al mantener un ai/archive/ estructurado:
 
-```
-project/
-├ .cursor/
-│   ├ agents/
-│   ├ rules/
-│   └ skills/
-├ src/
-├ package.json
-└ ...
-```
+Contexto Infinito: En futuros cambios, la IA consultará el histórico para entender por qué se tomó una decisión técnica.
 
-## Philosophy
+Evita Alucinaciones: La IA no inventará reglas; se basará en tu historial real de diseños.
 
-AI Dev Pipeline se basa en un principio simple:
+Onboarding: Un nuevo desarrollador (o IA) entiende el sistema leyendo la evolución de los archivos en ai/.
 
-AI debe trabajar como un equipo de ingeniería estructurado.
+Contributing
+¡Contribuciones bienvenidas! Abrir issues o pull requests para colaborar en nuevos agentes o soporte para más entornos AI.
 
-En lugar de depender de prompts aleatorios, el pipeline introduce roles y responsabilidades definidos, haciendo el flujo de AI predecible y mantenible.
-
-Objetivos:
-
-- Evitar arquitectura hallucinada
-- Fomentar razonamiento estructurado
-- Separar análisis de implementación
-- Mejorar mantenibilidad del código generado por AI
-
-## Contributing
-
-¡Contribuciones bienvenidas!
-
-Ideas de mejora:
-
-- Nuevos agents
-- Nuevas skills
-- Soporte para más entornos AI
-- Mejoras en el CLI (prompts interactivos, auto-updates, etc.)
-
-Abrir issues o pull requests para colaborar.
-
-## License
-
+License
 MIT
