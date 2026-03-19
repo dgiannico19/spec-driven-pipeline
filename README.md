@@ -42,11 +42,11 @@ ai/archive/: Memoria histórica de decisiones (Contexto para futuras IAs).
 🤖 Pipeline Steps (The 7 Agents)
 Al instalar, dispondrás de los siguientes agentes que orquestan el desarrollo de punta a punta:
 
-1. 🏗️ Step 1: Proposal Initiator
+🏗️ Step 1: Proposal Initiator
 Función: Analiza el ticket, épica o historia de usuario.
 Output: Crea la carpeta en ai/changes/ e inicia el proposal.md. Define el "Why" (negocio) y las nuevas Capabilities del sistema.
 
-2. 🔍 Step 2: Exploration Analyzer
+🔍 Step 2: Exploration Analyzer
 Función: Escanea el repositorio real buscando puntos de impacto.
 Output: El archivo exploration.md. Identifica archivos afectados, comportamiento actual y brechas técnicas (gaps).
 
