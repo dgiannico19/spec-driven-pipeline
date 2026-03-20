@@ -84,9 +84,10 @@ Al inicializar el proyecto, los siguientes agentes estarán disponibles en tu ID
 * **Comando:** `/step-8-ai-archiver`
 * **Misión:** Bibliotecario. Cierra el ciclo de vida de la épica.
 * **Resultado:** Mueve la documentación a `ai/archive/` (incluyendo una copia de la spec final) y limpia el área de cambios activos.
+
 ---
 
-🔄 El Ciclo de Vida de las Specs
+##  🔄 El Ciclo de Vida de las Specs
 A diferencia de otros sistemas, aquí la documentación técnica no es estática, es evolutiva:
 
 Nacimiento (Step 4): El diseño aprobado se "promociona" a ai/specs/ como la nueva verdad oficial del sistema.
