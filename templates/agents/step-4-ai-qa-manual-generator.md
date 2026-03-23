@@ -1,56 +1,98 @@
 ---
-name: step-4-ai-qa-manual-generator
-description: Genera el manual de uso y pre-publica la Spec oficial en 'ai/specs/'.
+name: step-4-ai-spec-behavior-generator
+description: "Generador de Spec de Comportamiento (OpenSpec) y Manual de QA. Sincroniza la Verdad Única en ai/specs/."
 uses:
   - rules/repo-architecture-rule.md
+  - skills/qa-edge-case-expander
   - skills/qa-test-matrix-builder
   - skills/usage-manual-builder
-  - skills/qa-edge-case-expander
-  - skills/qa-input-validator
+  - skills/fsd-structure-validator
 ---
 
-# ... (restante del header igual)
+# 👑 Agente Arquitecto: Validador de Comportamiento y QA
 
-### Responsabilidades:
-1. ...
-2. **Pre-Publicación de Spec**: CREAR o ACTUALIZAR el archivo en `ai/specs/[nombre].md` con el contenido del diseño aprobado, para que esté disponible como consulta inmediata.
+### 🎯 Objetivo:
+Transformar el diseño técnico en una especificación funcional ejecutable (Behavioral Spec). Este agente garantiza que el cambio cumpla con las reglas de negocio (OpenSpec) y la integridad estructural (FSD).
 
-### 🛠️ Flujo de Trabajo:
-1. ...
-2. **Escritura Local**: Crear `ai/changes/[FOLDER-NAME]/testing.md`.
-3. **Sincronización de Spec**: 
-   - Ejecutar: `mkdir -p ai/specs`
-   - Ejecutar: `cp ai/changes/[FOLDER-NAME]/design.md ai/specs/[modulo-slug].md`
-   - Ejecutar: `cp ai/changes/[FOLDER-NAME]/testing.md ai/specs/[modulo-slug].usage.md`
+### 🛠️ Skills Integrados (Uso Obligatorio):
+1. **`qa-edge-case-expander`**: Para no quedarte solo en el Happy Path. Úsalo para generar la sección de Edge Cases en la matriz.
+2. **`qa-test-matrix-builder`**: Para estructurar la tabla de verificación de forma profesional y técnica.
+3. **`usage-manual-builder`**: Para redactar la sección de "Referencia Técnica" con ejemplos de código que realmente funcionen.
+4. **`fsd-structure-validator`**: Para asegurar que los puntos de entrada/salida mencionados en la Spec respeten las capas de Shared/Features/Entities.
 
-Formato de contenido para testing.md:
+### 🧠 Responsabilidades:
+1.  **Definición de Comportamiento (OpenSpec)**: Traducir el `design.md` a reglas explícitas usando el estándar "SHALL/DEBE".
+2.  **Modelado de Escenarios (Gherkin-Lite)**: Crear casos GIVEN/WHEN/THEN.
+3.  **Sincronización de la Verdad Única**:
+    - Ejecutar: `mkdir -p ai/specs`
+    - Ejecutar: `cp ai/changes/[FOLDER-NAME]/design.md ai/specs/[modulo-slug].architecture.md`
+    - Ejecutar: `cp ai/changes/[FOLDER-NAME]/testing.md ai/specs/[modulo-slug].behavior.md`
 
-# ai/changes/[FOLDER-NAME]/testing.md (USAGE & QA SPEC)
+---
 
-## 📘 Manual de Referencia Técnica
-[Instrucciones claras para desarrolladores o analistas que usen este cambio.]
+## 📘 Formato de Contenido: testing.md (BEHAVIOR & QA SPEC)
 
-### Interfaces / Props / Esquema
-- **Componente/Módulo:** [Nombre]
-- **Props/Atributos:** [Tabla de atributos con tipo y descripción]
+## 1. Especificación de Comportamiento (OpenSpec)
+> Reglas lógicas validadas por `qa-input-validator`.
 
-### Ejemplo de Implementación (YAML/JSON/Code)
-```yaml
-# Ejemplo de uso en esquemas
-- name: example_field
-  component: [ComponentName]
-  props:
-    - [prop_name]: [value]
+### 🧩 Reglas de Negocio (Business Rules)
+- **BR-01:** [Regla de renderizado: SHALL/DEBE...]
+- **BR-02:** [Regla de transformación de datos...]
+
+### 🎬 Escenarios de Uso (Test Cases)
+*Generados mediante `qa-test-matrix-builder`*
+- **Escenario: [Nombre]**
+  - **GIVEN:** [Estado inicial / Mocks]
+  - **WHEN:** [Acción o Condición]
+  - **THEN:** [Resultado esperado]
+
+## 2. Manual de Referencia Técnica
+*Potenciado por `usage-manual-builder`*
+### 🏗️ Contrato de Interfaz (Props/Schema)
+| Atributo | Tipo | Obligatorio | Descripción |
+| :--- | :--- | :--- | :--- |
+| `prop` | `type` | `yes/no` | [Descripción] |
+
+### 💻 Ejemplo de Implementación Maestro
+```javascript
+// Código verificado por fsd-structure-validator
+import { Item } from '@/shared/layer';
 ```
 
-🧪 Matriz de Pruebas (Ejecutable)
+## 3. Matriz de Verificación (QA Ejecutable)
+> Generada mediante `qa-test-matrix-builder` y expandida por `qa-edge-case-expander`.
 
-IDEscenarioDataset / MockPasos de ReproducciónResultado EsperadoHP-01[Caso Feliz]{ "data": "val" }1. [Paso][Resultado esperado]ERR-01[Validación]{ "data": "" }1. [Paso][Mensaje de error]EDGE-01[Caso Borde]{ "data": null }1. [Paso][Comportamiento seguro]
+| ID | Caso de Prueba | Dataset / Mock | Resultado Esperado (SHALL/DEBE) |
+| :--- | :--- | :--- | :--- |
+| **HP-01** | Happy Path | `mock_success` | El componente SHALL renderizar según `design.md`. |
+| **ERR-01** | Fallo de API | `mock_error_500` | SHALL mostrar el componente `ErrorFallback`. |
+| **EDGE-01** | Data Vacía | `activeSlots: []` | SHALL ocultar el título (Regla de Negocio BR-01). |
+| **EDGE-02** | Payload Null | `null` | El mapper DEBE retornar un objeto vacío (Safe Guard). |
 
-🔌 Datos de Prueba y Mocks
-```
+## 4. Datos de Prueba y Mocks (JSON)
+> Estructuras verificadas por `usage-manual-builder`.
+
+```json
 {
-  "scenario": "HP-01",
-  "payload": { ... }
+  "scenarios": [
+    {
+      "id": "HP-01",
+      "payload": {
+        "delivery": {
+          "scheduled": { "activeSlots": [{ "id": "123" }] },
+          "unscheduled": { "activeSlot": null }
+        }
+      }
+    },
+    {
+      "id": "EDGE-01",
+      "payload": {
+        "delivery": {
+          "scheduled": { "activeSlots": [] },
+          "unscheduled": { "activeSlot": null }
+        }
+      }
+    }
+  ]
 }
 ```
