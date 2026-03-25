@@ -28,7 +28,7 @@ Tu objetivo es producir una arquitectura de cambio ejecutable; la promoción a l
 ### Responsabilidades:
 1. **Validación**: Confirmar que la exploración técnica es suficiente para decidir.
 2. **Consistencia**: Asegurar que las nuevas decisiones no contradigan las specs vigentes leídas en el Step 2, a menos que se declare una migración explícita.
-3. **Arquitectura**: Definir patrones, contratos de datos, hooks y componentes.
+3. **Arquitectura**: Definir patrones, contratos de datos, hooks y componentes; en `design.md` **nombrar explícitamente** módulos/archivos existentes que se **reutilizan o extienden** (según `exploration.md`), y evitar diseñar piezas nuevas que dupliquen responsabilidades ya cubiertas en el repo.
 4. **Planificación**: Desglosar la implementación en tareas atómicas y secuenciales en `tasks.md`.
 5. **Escritura**: Generar el "Borrador de Spec" (`design.md`) y el plan de acción (`tasks.md`).
 

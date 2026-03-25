@@ -23,6 +23,8 @@ Lógica incompleta.
 
 Suposiciones funcionales no soportadas técnicamente.
 
+**Parcialmente cubierto**: el requisito ya tiene implementación en **archivo X** pero falta caso o rama; no etiquetar como “hueco total” si se puede **extender**.
+
 Restricciones
 
 No proponer soluciones.

@@ -1,43 +1,44 @@
 ---
 name: code-area-impact-detector
-description: Identifica qué áreas del repositorio están relacionadas con el dominio o responsabilidades detectadas en el Step 1.
+description: Identifica áreas del repo relacionadas con el dominio y señala múltiples candidatos a reutilizar para la misma capacidad.
 ---
 
-Objetivo
+## Objetivo
 
-Determinar qué módulos del repositorio están relacionados con el dominio identificado en el análisis funcional.
+Determinar qué módulos del repositorio están relacionados con el dominio del Step 1 y **dónde podría colisionar** un cambio ingenuo con código ya existente.
 
-Entrada
+## Entrada
 
-Reporte del Step 1.
+Contexto de `proposal.md` / `spec.md` y resultados de escaneo de estructura si existen.
 
-Analizar
+## Analizar
 
 Buscar en el repositorio:
 
-- features relacionadas
-- entidades del dominio
-- componentes relevantes
-- servicios o APIs vinculadas
+- Features, entidades, widgets, componentes, servicios o APIs vinculadas al dominio.
+- **Más de un archivo** que parezca cubrir la misma responsabilidad (duplicación histórica o variantes legacy/modern).
 
-Detectar
+## Detectar
 
-Carpetas involucradas.
+- Carpetas involucradas.
+- Archivos clave con **rutas concretas**.
+- Módulos que implementan responsabilidades **solapadas** (lista explícita: “A vs B hacen X parecido”).
 
-Archivos clave.
+## Restricciones
 
-Módulos técnicos que implementan responsabilidades relacionadas.
+- No asumir funcionalidades nuevas.
+- Solo identificar relación con código existente y **ambiguiedad de reutilización** (varios candidatos).
 
-Restricciones
+## Formato de salida
 
-No asumir nuevas funcionalidades.
+### Carpetas relacionadas
+…
 
-Solo identificar relación con código existente.
+### Archivos relevantes
+…
 
-Formato de salida
+### Responsabilidad técnica actual
+…
 
-## Carpetas relacionadas
-
-## Archivos relevantes
-
-## Responsabilidad técnica actual
+### Múltiples candidatos para la misma capacidad (si aplica)
+- [Candidato 1] vs [Candidato 2] — qué tan solapados están — cuál parece canónico según imports/uso en el repo

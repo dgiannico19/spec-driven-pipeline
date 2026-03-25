@@ -1,28 +1,36 @@
 ---
 name: repo-code-analyzer
-description: Analiza el código existente para entender responsabilidades actuales antes de implementar cambios.
+description: Analiza el código existente, localiza duplicados cercanos y define el mapa de impacto antes de tocar archivos.
 ---
 
-Objetivo
+## Objetivo
 
-Comprender cómo funciona el código actual antes de modificarlo.
+Comprender el código real del repo y **reducir superficie nueva**: saber qué ya existe, qué se puede reutilizar y qué es ruido a evitar.
 
-Analizar
+## Fase 1 — Mapa de impacto
 
-Estructura de archivos.
+- Estructura de carpetas y capas (FSD u otra del repo).
+- Archivos que **deben** modificarse según `design.md` / `exploration.md`.
+- Archivos **prohibidos** tocar salvo spec explícita.
 
-Responsabilidades actuales.
+## Fase 2 — Descubrimiento de reutilización
 
-Dependencias.
+- Buscar implementaciones similares: utilidades, hooks, componentes genéricos, validadores, formatters, clients HTTP, constantes.
+- Identificar **APIs públicas** del módulo (`index.ts` / barrel) vs internos; preferir extender vía API pública.
+- Listar **dependencias ya usadas** en el área del cambio (evitar introducir otra lib que duplique rol, ej. segunda librería de fechas).
 
-Identificar
+## Fase 3 — Decisiones
 
-Qué archivos deben modificarse.
+- Para cada pieza nueva propuesta: ¿existe equivalente o parcial en el repo? Si sí → **reusar o extender**.
+- Señalar riesgo de **duplicación lógica** (mismo comportamiento, distinto archivo).
 
-Qué archivos no deben tocarse.
+## Salida
 
-Qué lógica debe aislarse.
+### Mapa técnico de impacto
+[Rutas a modificar / crear solo si Fase 2 no encontró alternativa]
 
-Salida
+### Candidatos a reutilizar
+[Archivos y símbolos concretos]
 
-Mapa técnico de impacto.
+### Huecos reales
+[Qué falta de verdad y justifica código nuevo]

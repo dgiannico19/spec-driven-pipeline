@@ -7,6 +7,7 @@ uses:
   - skills/spec-library-reader
   - skills/code-area-impact-detector
   - skills/existing-behavior-analyzer
+  - skills/reuse-before-create
   - skills/technical-gap-analyzer
   - skills/technical-risk-detector
 ---
@@ -27,17 +28,19 @@ Tu objetivo es documentar el "Estado del Arte" del sistema antes de proponer cua
 ### Responsabilidades:
 1. **Sincronización**: Leer `proposal.md` y `spec.md` (ajusta el borrador de spec si el código revela requisitos nuevos).
 2. **Consulta de Specs**: Buscar en `specs/library/` definiciones técnicas previas de módulos afectados.
-3. **Mapeo de Código**: Localizar físicamente en el repositorio los archivos, hooks y estilos que se verán impactados.
-4. **Análisis de Brechas**: Comparar lo que hay (Código/Specs) con lo que se pide (Proposal) para identificar "Gaps" técnicos.
-5. **Documentación**: Escribir el `exploration.md` detallando hallazgos y riesgos.
+3. **Mapeo de Código**: Localizar archivos, hooks y estilos impactados (`repo-structure-scanner`, `code-area-impact-detector`). Señalar **varios candidatos** si la misma capacidad aparece en más de un sitio.
+4. **Comportamiento existente y reutilización**: Ejecutar **`existing-behavior-analyzer`** y aplicar la **lógica de descubrimiento** de **`reuse-before-create`** (búsqueda por concepto, barrels, libs ya usadas). El `exploration.md` **debe** incluir la sección **«Candidatos a reutilizar o extender»** con rutas/símbolos concretos.
+5. **Análisis de Brechas**: `technical-gap-analyzer` — qué pide el negocio y qué falta o está incompleto en código (incluye “ya existe parcialmente en X”).
+6. **Documentación**: `exploration.md` completo + actualizar `spec.md` si aplica.
 
 ### 🛠️ Flujo de Trabajo:
 1. **Localización**: Carpeta de la épica en `specs/changes/`.
 2. **Ingesta**: Leer `proposal.md` y `spec.md`.
-3. **Investigación de Specs**: Ejecutar `spec-library-reader` sobre `specs/library/`.
-4. **Escaneo de Repo**: Ejecutar `repo-structure-scanner` para validar si el código coincide con las specs o si hay deuda técnica.
-5. **Detección de Riesgos**: Identificar efectos colaterales en componentes dependientes.
-6. **Escritura**: Crear `exploration.md` y **actualizar** `spec.md` si hace falta (formato unificado: Requirements + GIVEN/WHEN/THEN donde ya sea posible; ver `templates/spec-unified-template.md`).
+3. **Investigación de Specs**: `spec-library-reader` sobre `specs/library/`.
+4. **Escaneo de Repo**: `repo-structure-scanner` + `code-area-impact-detector` (áreas + solapamientos).
+5. **Inventario reutilizable**: `existing-behavior-analyzer` (Fases A–C) y criterios de **`reuse-before-create`** a nivel **exploración** (sin implementar): qué existe, qué extender, riesgo de duplicar.
+6. **Brechas y riesgos**: `technical-gap-analyzer` + `technical-risk-detector`.
+7. **Escritura**: `exploration.md` (incl. secciones de reutilización) y **actualizar** `spec.md` si hace falta (`templates/spec-unified-template.md`).
 
 Formato de contenido para exploration.md:
 
@@ -50,6 +53,16 @@ Formato de contenido para exploration.md:
 - **Files**: [Rutas de archivos identificadas]
 - **Components**: [Componentes React / UI Elements]
 - **Specs Relacionadas**: [Lista de archivos en specs/library/ que sirven de base]
+
+## Candidatos a reutilizar o extender
+> Obligatorio: lista **rutas y símbolos** (no solo nombres vagos). Clasificar: reutilizar tal cual | extender | consolidar (duplicados) | hueco real.
+
+| Activo existente | Rol | Acción sugerida |
+| :--- | :--- | :--- |
+| `path/to/module` | … | reutilizar / extender / … |
+
+### Riesgo de duplicación
+- [Qué podría reimplementarse por error si Step 3/5 no lee esta sección]
 
 ## Technical Gaps
 - [ ] [Brecha 1: Falta de utilidad X]
