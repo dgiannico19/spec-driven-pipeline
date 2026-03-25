@@ -26,7 +26,7 @@ La **fuente de verdad** del cambio es `spec.md`: debe existir desde el día uno 
 1. **Validación**: Asegurar que la descripción de la tarea sea suficiente para iniciar.
 2. **Estructura**: Ruta `specs/changes/YYYY-MM-DD-nombre-slug/` (fecha actual).
 3. **Inicialización**: Crear la carpeta. Si ya hay una épica activa, advertir al usuario.
-4. **Documentación**: Crear en este orden lógico: `config.yaml` (épica), `spec.md` (borrador), `proposal.md`.
+4. **Documentación**: Crear en este orden lógico: `config.yaml` (épica), `spec.md` (borrador), `proposal.md`. El `spec.md` debe seguir el **formato unificado** del paquete: plantilla `templates/spec-unified-template.md` (Propósito, Alcance, Requirements con SHALL/MUST y escenarios GIVEN/WHEN/THEN, CA verificables, No objetivos, Notas de trazabilidad).
 
 ### 🛠️ Flujo de Trabajo:
 1. Ejecutar `epic-input-validator`.
@@ -55,26 +55,7 @@ spect:
 
 #### Plantilla: specs/changes/[FOLDER-NAME]/spec.md
 
-```markdown
-# Spec — [Título corto]
-
-> Estado: borrador inicial (Step 1). Los steps 2–4 completan secciones.
-
-## Alcance
-- [Qué entra y qué queda fuera]
-
-## Requisitos funcionales
-- [RF-01] …
-
-## Comportamiento esperado
-- [Resumen; detalle con SHALL/DEBE en steps posteriores]
-
-## No objetivos
-- …
-
-## Trazabilidad
-- Proposal: ver `proposal.md`
-```
+Usá la plantilla canónica del paquete (`templates/spec-unified-template.md`) como esqueleto. En Step 1 alcanza con rellenar **Propósito**, **Alcance** (dentro/fuera), al menos un **Requirement** con un **Scenario** GIVEN/WHEN/THEN si ya hay claridad, y **No objetivos** + enlace a `proposal.md` en trazabilidad. Los steps 2–4 completan SHALL/MUST, más escenarios y **Criterios de aceptación verificables (CA-XX)**.
 
 ---
 

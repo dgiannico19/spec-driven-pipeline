@@ -7,6 +7,8 @@
 
 **Guía para equipos** (onboarding, `config.yaml`, skills propios, `step_extra_skills`, archivo): [docs/guia-equipos.md](docs/guia-equipos.md).
 
+**Formato de `spec.md`** (OpenSpec-style + alcance/CA): [docs/spec-formato-unificado.md](docs/spec-formato-unificado.md) · plantilla: [templates/spec-unified-template.md](templates/spec-unified-template.md).
+
 ## 🛠 Entornos Soportados
 
 - **Cursor** (Reglas y Agentes) | **Windsurf** (Cascade) | **Claude Code**

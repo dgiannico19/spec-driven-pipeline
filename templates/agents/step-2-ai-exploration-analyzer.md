@@ -37,7 +37,7 @@ Tu objetivo es documentar el "Estado del Arte" del sistema antes de proponer cua
 3. **Investigación de Specs**: Ejecutar `spec-library-reader` sobre `specs/library/`.
 4. **Escaneo de Repo**: Ejecutar `repo-structure-scanner` para validar si el código coincide con las specs o si hay deuda técnica.
 5. **Detección de Riesgos**: Identificar efectos colaterales en componentes dependientes.
-6. **Escritura**: Crear `exploration.md` y **actualizar** `spec.md` si hace falta (mismas secciones, mayor precisión).
+6. **Escritura**: Crear `exploration.md` y **actualizar** `spec.md` si hace falta (formato unificado: Requirements + GIVEN/WHEN/THEN donde ya sea posible; ver `templates/spec-unified-template.md`).
 
 Formato de contenido para exploration.md:
 

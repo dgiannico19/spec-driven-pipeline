@@ -17,7 +17,13 @@ Esta guía complementa el [README principal](../README.md). Está pensada para *
 
 ---
 
-## 2. Qué es cada cosa (mapa mental)
+## 2. Formato de `spec.md`
+
+El contrato de comportamiento usa el **formato unificado** del paquete (alcance, SHALL/MUST, escenarios GIVEN/WHEN/THEN, criterios CA-XX). Detalle y plantilla: [spec-formato-unificado.md](spec-formato-unificado.md) y `templates/spec-unified-template.md` en el paquete.
+
+---
+
+## 3. Qué es cada cosa (mapa mental)
 
 | Artefacto | Quién lo edita | Rol |
 | :--- | :--- | :--- |
@@ -31,7 +37,7 @@ Esta guía complementa el [README principal](../README.md). Está pensada para *
 
 ---
 
-## 3. Skills del paquete vs skills del equipo
+## 4. Skills del paquete vs skills del equipo
 
 - Los **skills del paquete** se instalan con los templates del IDE (rutas en `uses:` del frontmatter de cada agente). No hace falta listarlos de nuevo en `pipeline.config.yaml`.
 - Los **skills del equipo** viven bajo la ruta configurada en `skills_path` (por defecto `specs/skills/`). Son archivos que vos creás (ej. `specs/skills/nuestra-definition-of-done.md`).
@@ -41,7 +47,7 @@ Otro equipo con otras prácticas solo cambia su `specs/skills/`, su `specs/confi
 
 ---
 
-## 4. `step_extra_skills`: cómo enlazar bien
+## 5. `step_extra_skills`: cómo enlazar bien
 
 En `pipeline.config.yaml`:
 
@@ -60,7 +66,7 @@ Tras guardar el YAML, ejecutá `npx ai-dev-pipeline run`. Los paths bajo cada ag
 
 ---
 
-## 5. Flujo de una épica (resumen)
+## 6. Flujo de una épica (resumen)
 
 1. **Step 1:** carpeta `specs/changes/AAAA-MM-DD-slug/` con `spec.md`, `config.yaml` de épica y `proposal.md`.
 2. **Steps 2–4:** `exploration.md`, `design.md`, `tasks.md`, refinar `spec.md`, `testing.md`; opcionalmente actualizar `specs/library/`.
@@ -71,7 +77,7 @@ Detalle de archivos y comandos: agente **step-8-ai-archiver** y [README](../READ
 
 ---
 
-## 6. Documentar la política **de tu** empresa
+## 7. Documentar la política **de tu** empresa
 
 Esta guía es genérica. En el repo de producto conviene añadir (README interno o `docs/` del producto):
 
@@ -82,7 +88,7 @@ Esta guía es genérica. En el repo de producto conviene añadir (README interno
 
 ---
 
-## 7. Problemas frecuentes
+## 8. Problemas frecuentes
 
 | Síntoma | Qué revisar |
 | :--- | :--- |
@@ -92,7 +98,7 @@ Esta guía es genérica. En el repo de producto conviene añadir (README interno
 
 ---
 
-## 8. Referencias
+## 9. Referencias
 
 - [README del paquete](../README.md): instalación, tabla de rutas, lista de agentes.
 - Código que genera `step-extra-skills.md`: `src/lib/specPaths.js` (`writeStepExtraSkillsMd`).

@@ -22,7 +22,7 @@ Tu objetivo es producir una arquitectura de cambio ejecutable; la promoción a l
 ### 📌 Restricciones de Directorio (CRÍTICO)
 - Fuentes obligatorias: `proposal.md`, `exploration.md` y `spec.md`.
 - Salidas: `design.md` y `tasks.md` bajo `specs/changes/[FOLDER-NAME]/`.
-- **Actualiza `spec.md`** para que requisitos y comportamiento sigan alineados con el diseño (sin duplicar todo el design: resume contratos y reglas que el negocio debe poder leer).
+- **Actualiza `spec.md`** para alinear requisitos y escenarios con el diseño (formato unificado `templates/spec-unified-template.md`: SHALL/MUST y GIVEN/WHEN/THEN; sin pegar el `design.md` entero).
 - No uses `openspec/` en la raíz.
 
 ### Responsabilidades:

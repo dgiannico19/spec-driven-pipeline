@@ -22,7 +22,7 @@ Completar la **spec vinculante** (`spec.md`) con reglas y escenarios verificable
 - `specs/changes/[FOLDER-NAME]/design.md`, `spec.md`, `tasks.md`.
 
 ### Salidas
-- **Actualizar** `spec.md` (secciones de comportamiento con formulación SHALL/DEBE o equivalente claro).
+- **Actualizar** `spec.md` al **formato unificado** (`templates/spec-unified-template.md`): cada requisito con SHALL/MUST y, bajo cada **Requirement**, escenarios con **GIVEN / AND / WHEN / THEN / AND**. Mantener **CA-XX** alineados con `testing.md`.
 - **Crear o actualizar** `testing.md` (matriz QA, escenarios, manual técnico).
 - **Opcional pero recomendado**: copiar o fundir en `specs/library/[modulo-slug].md` el contrato estable (según naming del equipo).
 
@@ -42,13 +42,13 @@ cp specs/changes/[FOLDER-NAME]/spec.md specs/library/[modulo-slug].md
 ## Formato de contenido: testing.md (comportamiento y QA)
 
 ## 1. Reglas de negocio / comportamiento
-> Validadas contra `spec.md`.
+> Debe ser **trazable** a `spec.md`: mismos RF/Requirement y escenarios GIVEN/WHEN/THEN.
 
-### Reglas
-- **BR-01:** [Condición: SHALL/DEBE …]
+### Reglas (opcional; o referencia directa a spec.md)
+- **BR-01:** [o: ver Requirement (RF-01) en spec.md]
 
-### Escenarios (GIVEN / WHEN / THEN)
-- **Escenario: [Nombre]**
+### Escenarios de prueba (espejo o extensión del spec)
+- **Escenario: [Nombre]** (alinear con `#### Scenario` del spec)
   - **GIVEN:** …
   - **WHEN:** …
   - **THEN:** …
