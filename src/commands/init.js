@@ -1,13 +1,20 @@
 const fs = require("fs");
 const path = require("path");
-const os = require("os"); // Para obtener el home del usuario
+const os = require("os");
 const inquirer = require("inquirer");
+const yaml = require("js-yaml"); // Asegúrate de tenerlo en dependencias
 
 const detectEnvironments = require("../detectEnvironment");
+const {
+  loadPipelineConfig,
+  resolveSpecPaths,
+  ensureSpecsLayout,
+  ensureTeamConfigYaml,
+  writeStepExtraSkillsMd,
+} = require("../lib/specPaths");
 
 const copyDir = (src, dest) => {
   if (!fs.existsSync(src)) return;
-
   if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
 
   const entries = fs.readdirSync(src, { withFileTypes: true });
@@ -32,8 +39,11 @@ const copyDir = (src, dest) => {
 };
 
 const selectEnvironment = async (envs) => {
-  // Agregamos la opción personalizada al final de la lista
-  const choices = [...envs, new inquirer.Separator(), { name: "➕ Otro (Configuración personalizada)", value: "custom" }];
+  const choices = [
+    ...envs,
+    new inquirer.Separator(),
+    { name: "➕ Otro (Configuración personalizada)", value: "custom" },
+  ];
 
   const answers = await inquirer.prompt([
     {
@@ -47,8 +57,9 @@ const selectEnvironment = async (envs) => {
       name: "customEnv",
       message: "¿Cómo se llama la carpeta de configuración? (ej: my-ai-rules):",
       when: (answers) => answers.env === "custom",
-      validate: (input) => input.length > 0 || "El nombre no puede estar vacío.",
-      filter: (input) => input.replace(/^\./, ""), // Quitamos el punto inicial si lo pone, lo manejamos nosotros luego
+      validate: (input) =>
+        input.length > 0 || "El nombre no puede estar vacío.",
+      filter: (input) => input.replace(/^\./, ""),
     },
   ]);
 
@@ -74,57 +85,83 @@ const selectLocation = async (env) => {
 const init = async () => {
   const projectRoot = process.cwd();
   const userHome = os.homedir();
-  
-  // Detectamos entornos, pero ya no cortamos el flujo si no hay ninguno
-  let detectedEnvs = detectEnvironments();
+  const packageRoot = path.join(__dirname, "../../");
 
+  let detectedEnvs = detectEnvironments();
   const env = await selectEnvironment(detectedEnvs);
   const location = await selectLocation(env);
 
   console.log(`\n🚀 Configurando entorno: ${env}`);
 
-  const packageRoot = path.join(__dirname, "../../");
-  const templateRoot = path.join(packageRoot, "templates");
-
-  // Determinamos el Target
-  let targetRoot;
-  const folderName = `.${env}`; // Mantenemos la convención del punto
-
-  if (location === "home") {
-    targetRoot = path.join(userHome, folderName);
-    console.log(`📍 Ubicación elegida: Global (Home)`);
-  } else {
-    targetRoot = path.join(projectRoot, folderName);
-    console.log(`📍 Ubicación elegida: Local (Proyecto)`);
+  // --- 1. CONFIGURACIÓN DINÁMICA (YAML) ---
+  const configPath = path.join(projectRoot, "pipeline.config.yaml");
+  if (!fs.existsSync(configPath)) {
+    const defaultConfig = {
+      schema: "spec-driven",
+      docs_root: "specs",
+      library_dir: "library",
+      context: `Idioma: Español.\nStack: [Define tu stack aquí]\nArquitectura: [Define tu arquitectura]\nReglas adicionales: [Tus reglas de equipo]`,
+      skills_path: "specs/skills",
+      rules_path: "specs/rules",
+      step_extra_skills: {},
+    };
+    fs.writeFileSync(configPath, yaml.dump(defaultConfig), "utf8");
+    console.log(`✨ Creado: pipeline.config.yaml`);
   }
 
-  // --- LÓGICA DE PRIVACIDAD Y DIRECTORIOS ---
-  // 1. Asegurar que existe la carpeta ai/ y ai/changes/ con un .gitkeep
-  const aiChangesPath = path.join(projectRoot, "ai", "changes");
-  const aiSpecsPath = path.join(projectRoot, "ai", "specs");
-  
-  [aiChangesPath, aiSpecsPath].forEach(dir => {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(path.join(dir, ".gitkeep"), "");
-      console.log(`📁 Carpeta creada: ${dir}`);
+  // --- 2. ESTRUCTURA DE CARPETAS DEL USUARIO (specs/) ---
+  const cfg = loadPipelineConfig(projectRoot);
+  const paths = resolveSpecPaths(projectRoot, cfg);
+  const created = ensureSpecsLayout(paths);
+  for (const d of created) {
+    console.log(`📁 Carpeta usuario creada: ${path.relative(projectRoot, d)}`);
+  }
+  const teamCfg = ensureTeamConfigYaml(projectRoot, paths);
+  if (teamCfg) {
+    console.log(`✨ Creado: ${path.relative(projectRoot, teamCfg)}`);
+  }
+  const skillsMd = writeStepExtraSkillsMd(projectRoot, paths, cfg);
+  console.log(`✔ Generado: ${path.relative(projectRoot, skillsMd)}`);
+
+  // --- 3. ESTRUCTURA CORE (.ai/) ---
+  // Aquí guardamos tus skills y rules que vienen con el package
+  const coreSubdirs = ["core-skills", "core-rules"];
+  coreSubdirs.forEach((sub) => {
+    const fullPath = path.join(projectRoot, ".ai", sub);
+    if (!fs.existsSync(fullPath)) {
+      fs.mkdirSync(fullPath, { recursive: true });
+      console.log(`📁 Carpeta core creada: .ai/${sub}`);
     }
   });
 
-  // 2. Instalar Templates del IDE
-  if (!fs.existsSync(templateRoot)) {
-    console.log(`❌ No se encontró la carpeta de templates en el package.`);
-    return;
+  // Copiamos tus skills y rules base desde el package al proyecto
+  copyDir(
+    path.join(packageRoot, "core-skills"),
+    path.join(projectRoot, ".ai", "core-skills"),
+  );
+  copyDir(
+    path.join(packageRoot, "core-rules"),
+    path.join(projectRoot, ".ai", "core-rules"),
+  );
+
+  // --- 4. INSTALACIÓN DE TEMPLATES DEL IDE ---
+  const templateRoot = path.join(packageRoot, "templates");
+  let targetRoot;
+  const folderName = `.${env}`;
+
+  if (location === "home") {
+    targetRoot = path.join(userHome, folderName);
+  } else {
+    targetRoot = path.join(projectRoot, folderName);
   }
 
-  if (!fs.existsSync(targetRoot)) {
-    fs.mkdirSync(targetRoot, { recursive: true });
-    console.log(`📁 Creando directorio ${folderName}...`);
-  }
-
+  if (!fs.existsSync(targetRoot)) fs.mkdirSync(targetRoot, { recursive: true });
   copyDir(templateRoot, targetRoot);
 
-  console.log(`\n✅ AI Dev Pipeline instalado con éxito en: ${targetRoot}`);
+  console.log(`\n✅ AI Dev Pipeline instalado con éxito.`);
+  console.log(
+    `👉 IMPORTANTE: Corre 'npx ai-dev-pipeline run' para sincronizar el contexto con Cursor.`,
+  );
 };
 
 module.exports = init;

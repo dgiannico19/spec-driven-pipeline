@@ -5,6 +5,8 @@
 
 **AI Dev Pipeline** es una CLI diseñada para instalar un flujo de trabajo de IA estructurado en tu repositorio. Despliega agentes, reglas y habilidades (**skills**) para que la IA razone como un equipo de ingeniería senior.
 
+**Guía para equipos** (onboarding, `config.yaml`, skills propios, `step_extra_skills`, archivo): [docs/guia-equipos.md](docs/guia-equipos.md).
+
 ## 🛠 Entornos Soportados
 
 - **Cursor** (Reglas y Agentes) | **Windsurf** (Cascade) | **Claude Code**
@@ -17,83 +19,113 @@ Puedes ejecutarlo directamente sin instalar usando `npx`:
 
 ```bash
 npx ai-dev-pipeline init
+npx ai-dev-pipeline run
 ```
 
+`run` (alias `sync`) crea el árbol bajo `specs/` si falta, genera `specs/config.yaml` de equipo y actualiza `specs/step-extra-skills.md` a partir de `pipeline.config.yaml`.
+
 ---
 
-## 📁 Estructura del Workflow (directorio `ai/`)
+## 📁 Estructura del workflow (directorio `specs/`)
 
-El pipeline establece una **fuente de verdad única** dentro de la carpeta `ai/` de tu proyecto. Esto evita ensuciar la raíz y mantiene el contexto organizado:
+La documentación vive bajo **`specs/`** (antes `ai/` en versiones anteriores). La **fuente de verdad del comportamiento** es `spec.md` dentro de cada épica; nace en el Step 1 y se refina en los siguientes. Al archivar, la config de épica se guarda como **`.openspec.yaml`** en la raíz del directorio archivado (snapshot; no implica usar la carpeta `openspec/` en la raíz del repo).
 
-| Directorio | Propósito |
+| Ruta | Propósito |
 | :--- | :--- |
-| **ai/changes/** | **Espacio activo.** Aquí es donde los agentes trabajan en la épica actual. |
-| **ai/specs/** | **Librería de diseño.** Contiene la documentación técnica final de tus componentes. |
-| **ai/archive/** | **Memoria histórica.** Épicas finalizadas que sirven de contexto para futuras tareas. |
+| **specs/changes/** | Épica activa (una carpeta por cambio; no mezclar con `archive/`). |
+| **specs/changes/archive/** | Histórico por épica: raíz con proposal/design/tasks/exploration + **`.openspec.yaml`**, y subcarpeta **`specs/`** con `spec.md`, `testing.md`, etc. |
+| **specs/library/** | Librería viva entre épicas (antes `ai/specs/`). |
+| **specs/skills/** | Skills propios del equipo (Markdown u otros recursos que referencies). |
+| **specs/rules/** | Reglas adicionales del equipo. |
+| **specs/config.yaml** | Stack, idioma y convenciones para el “spect agent” (lectura en todos los steps). |
+| **specs/step-extra-skills.md** | Índice generado: skills **extra** por agente (desde `pipeline.config.yaml`). |
+
+### Migración desde `ai/`
+
+Si ya tenías `ai/changes`, `ai/specs`, etc., renombra la carpeta raíz a `specs/` y renombra `ai/specs` → `specs/library`. Si usabas `specs/archive/` en la raíz del docs tree, mueve el contenido a **`specs/changes/archive/`**. Actualiza `pipeline.config.yaml` y ejecuta `npx ai-dev-pipeline run`.
 
 ---
 
-## 🤖 Los 8 Agentes del Pipeline
+## ⚙️ Configuración: `pipeline.config.yaml`
+
+Además del texto libre en `context`, puedes fijar rutas y **skills adicionales por step** (sin fork del paquete):
+
+```yaml
+docs_root: specs
+library_dir: library
+skills_path: specs/skills
+rules_path: specs/rules
+step_extra_skills:
+  step-1-ai-proposal-initiator:
+    - skills/mi-checklist-onboarding.md
+  step-5-ai-dev-executor:
+    - skills/nuestra-politica-de-tests.md
+```
+
+Las claves bajo `step_extra_skills` deben coincidir con el campo `name:` del agente. Tras editar, ejecuta `npx ai-dev-pipeline run` para regenerar `specs/step-extra-skills.md`.
+
+---
+
+## 🤖 Los 8 agentes del pipeline
 
 Inicia cada fase invocando al agente correspondiente en el chat de tu IDE:
 
-### 🏗️ 1. Iniciador de Propuesta (Step 1)
+### 🏗️ 1. Iniciador de propuesta (Step 1)
 
 - **Comando:** `/step-1-ai-proposal-initiator`
-- **Misión:** Analizar el ticket de negocio y crear la carpeta de la épica con `proposal.md`.
+- **Misión:** Crear la carpeta de épica con **`spec.md`**, **`config.yaml`** de épica y **`proposal.md`**.
 - **Skills:** `epic-input-validator`, `ai-path-generator`, `epic-scope-analyzer`, `epic-domain-extractor`.
 
-### 🔍 2. Analizador de Exploración (Step 2)
+### 🔍 2. Analizador de exploración (Step 2)
 
 - **Comando:** `/step-2-ai-exploration-analyzer`
-- **Misión:** Escanear el código real para ver el impacto y generar `exploration.md`.
+- **Misión:** Código + `specs/library/` frente a `proposal.md` / `spec.md` → **`exploration.md`** (y refinar `spec.md` si aplica).
 - **Skills:** `spec-library-reader`, `repo-structure-scanner`, `technical-gap-analyzer`, `code-area-impact-detector`.
 
-### 🧠 3. Constructor de Diseño (Step 3)
+### 🧠 3. Constructor de diseño (Step 3)
 
-- **Comando:** `/step-3-ai-designer-builder`
-- **Misión:** Definir el **CÓMO** técnico definitivo en `design.md` y el checklist `tasks.md`.
+- **Comando:** `/step-3-ai-design-builder`
+- **Misión:** **`design.md`** y **`tasks.md`**; mantiene coherencia con **`spec.md`**.
 - **Skills:** `technical-decision-maker`, `task-list-generator`, `fsd-architecture-planner`.
 
-### 📘 4. Generador de QA y Behavior (Step 4)
+### 📘 4. Comportamiento y QA (Step 4)
 
 - **Comando:** `/step-4-ai-qa-manual-generator`
-- **Misión:** Traducir el diseño en pasos de prueba (OpenSpec) y manuales en `testing.md`.
-- **Skills:** `qa-test-matrix-builder`, `usage-manual-builder`, `qa-input-validator`, `qa-edge-case-expander`.
+- **Misión:** Completar reglas y escenarios en **`spec.md`**, generar **`testing.md`**, opcionalmente actualizar **`specs/library/`**.
+- **Skills:** `qa-test-matrix-builder`, `usage-manual-builder`, `qa-edge-case-expander`, `fsd-structure-validator`.
 
-### 🔨 5. Ejecutor de Desarrollo (Step 5)
+### 🔨 5. Ejecutor de desarrollo (Step 5)
 
 - **Comando:** `/step-5-ai-dev-executor`
-- **Misión:** Implementar el código siguiendo fielmente el diseño y marcar tareas en `tasks.md`.
+- **Misión:** Implementar código según `design.md` / `spec.md` / `testing.md` y marcar **`tasks.md`**.
 - **Skills:** `repo-code-analyzer`, `task-progress-updater`, `code-style-enforcer`, `minimal-change-implementer`.
 
-### 🛡️ 6. Revisor Estricto (Step 6)
+### 🛡️ 6. Revisor estricto (Step 6)
 
 - **Comando:** `/step-6-ai-strict-reviewer`
-- **Misión:** Gatekeeper final. Valida código vs diseño y genera reporte de auditoría.
+- **Misión:** Auditoría frente a `spec.md`, `design.md`, `tasks.md`, `testing.md`.
 - **Skills:** `diff-change-detector`, `code-style-reviewer`, `task-completion-verifier`.
 
-### 📦 7. Organizador de Commits (Step 7)
+### 📦 7. Organizador de commits (Step 7)
 
 - **Comando:** `/step-7-ai-commit-splitter`
-- **Misión:** Generar un plan de **Conventional Commits** atómicos para el cierre.
+- **Misión:** Plan de **Conventional Commits** atómicos (cruza con `tasks.md` en `specs/changes/`).
 - **Skills:** `conventional-commit-generator`.
 
-### 🗃️ 8. Archivador de Conocimiento (Step 8)
+### 🗃️ 8. Archivador (Step 8)
 
 - **Comando:** `/step-8-ai-archiver`
-- **Misión:** Mover la épica a `archive/` y promocionar la Spec final a la librería oficial.
+- **Misión:** Promover a **`specs/library/`**; archivar en **`specs/changes/archive/[épica]/`** (raíz: cuatro `.md` + **`.openspec.yaml`** desde `config.yaml`; carpeta **`specs/`** con `spec.md` y `testing.md`); luego **`rm -rf`** la carpeta activa en `specs/changes/[épica]`.
 - **Skills:** `ai-archiver`.
 
 ---
 
-## 🔄 El Ciclo de Vida de las Specs
+## 🔄 Ciclo de vida de la spec
 
-La documentación técnica no es estática, es **evolutiva**:
-
-1. **Nacimiento (Step 4):** El diseño se promociona a `ai/specs/` como la nueva verdad oficial.
-2. **Consulta (Step 2):** En futuras épicas, la IA lee primero `ai/specs/` para no romper reglas previas.
-3. **Persistencia (Step 8):** Al archivar, se guarda una copia de la evolución histórica.
+1. **Step 1:** Aparece `spec.md` (borrador) como contrato vivo junto al negocio en `proposal.md`.
+2. **Steps 2–3:** Exploración y diseño alimentan y ajustan `spec.md`.
+3. **Step 4:** Comportamiento verificable y `testing.md`; sincronización con `specs/library/`.
+4. **Step 8:** Copia estructurada a `specs/changes/archive/` y borrado total de la épica en `specs/changes/`; librería actualizada en `library/`.
 
 ---
 

@@ -3,7 +3,7 @@ name: task-completion-verifier
 description: Escanea exhaustivamente el archivo 'tasks.md' en busca de tareas pendientes o incompletas.
 
 logic:
-  - Cargar el archivo `ai/changes/[FOLDER-NAME]/tasks.md`.
+  - Cargar el archivo `specs/changes/[FOLDER-NAME]/tasks.md`.
   - Aplicar un regex de búsqueda: `/-\s\[\s\]/g` (busca cualquier instancia de checkbox vacío).
   - Contar el total de tareas (`[ ]` + `[x]`) vs. el total de completadas (`[x]`).
   - Si el conteo de `[ ]` es mayor a 0:
@@ -18,7 +18,7 @@ rules:
   - Validar que el archivo no esté vacío.
 
 input:
-  folder_path: "ai/changes/YYYY-MM-DD-nombre-slug/"
+  folder_path: "specs/changes/YYYY-MM-DD-nombre-slug/"
 
 output:
   status: "CONFORME | PENDIENTE"

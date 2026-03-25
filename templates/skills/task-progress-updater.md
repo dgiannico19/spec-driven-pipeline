@@ -1,9 +1,9 @@
 ---
 name: task-progress-updater
-description: Manipula archivos Markdown en 'ai/changes/' para marcar tareas como completadas.
+description: Manipula Markdown en specs/changes/ para marcar tareas como completadas.
 
 logic:
-  - Leer el contenido actual de `ai/changes/[FOLDER-NAME]/tasks.md`.
+  - Leer el contenido actual de `specs/changes/[FOLDER-NAME]/tasks.md`.
   - Localizar la línea que coincide con el ID o descripción de la tarea recién implementada.
   - Reemplazar el patrón `- [ ]` por `- [x]` exactamente en esa línea.
   - Si la tarea tiene sub-tareas, asegurar que el padre se marque solo si los hijos están listos (opcional).
@@ -16,7 +16,7 @@ rules:
 
 input:
   task_id: "ID o texto de la tarea"
-  folder_path: "ai/changes/YYYY-MM-DD-nombre-slug/"
+  folder_path: "specs/changes/YYYY-MM-DD-nombre-slug/"
 
 output:
   success: boolean
