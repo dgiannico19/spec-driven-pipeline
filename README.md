@@ -1,82 +1,85 @@
 # Spec-Driven Pipeline
 
-**npm:** [spec-driven-pipeline](https://www.npmjs.com/package/spec-driven-pipeline) · **Licencia:** [MIT](https://opensource.org/licenses/MIT) · **Node.js:** [>= 18](https://nodejs.org/)
-
-> En GitHub podés usar badges con shields.io; en npmjs.com el README se renderiza mejor sin imágenes externas al inicio del archivo.
+[![npm](https://img.shields.io/npm/v/spec-driven-pipeline.svg)](https://www.npmjs.com/package/spec-driven-pipeline)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node](https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
 **Framework CLI para equipos que quieren IA que *ejecute*, no solo converse.** Un único paquete npm combina **descubrimiento automático del repositorio**, **33 skills documentadas** bajo el estándar **Zero-Guesswork** y un **agente autónomo** que llama herramientas en bucle, puede alinearse a tus **specs en Markdown** y cerrar con verificación explícita.
 
----
-
-## 🎯 Propuesta de valor: un agente de software, no un chat
-
-| Qué **no** es | Qué **sí** es |
-| :--- | :--- |
-| Un reemplazo de chat genérico sin efectos en disco | Un **agente de software autónomo** orientado a tareas en tu workspace |
-| Una única ida y vuelta a la API | Un **bucle multi-turno** que ejecuta herramientas (`read_text_file`, `list_directory`, `str_replace_edit`) hasta terminar o agotar el límite de turnos |
-| Respuestas “de memoria” sobre rutas y archivos | Un flujo que **prioriza leer el contexto real** (FS, spec, diffs) antes de afirmar |
-| Cierre informal de la tarea | Con `--spec`, un protocolo que pide **`VERIFICATION_PASS`** tras contrastar el trabajo con la spec |
-
-En la práctica: escribís o mantenés specs en `.md`, **mapeás el proyecto** con `run`, y **delegás la ejecución** al comando `agent`, con opción de **verificar** que lo implementado cumple lo acordado en la spec.
+> **npmjs.com:** el visor de Markdown del registro es más estricto que GitHub. Este README evita tablas con pipes (`|`) porque suelen romper el render y dejan la página en blanco. El contenido es el mismo.
 
 ---
 
-## 🏗️ Arquitectura híbrida: nube (pago) vs local (privado)
+## Propuesta de valor: un agente de software, no un chat
 
-El runtime usa **`fetch` nativo (Node 18+)** y **dos transportes** mutuamente excluyentes:
+**Qué no es**
 
-| Aspecto | ☁️ **Cloud — Anthropic** | 🖥️ **Local / compatible OpenAI** |
-| :--- | :--- | :--- |
-| **Cuándo** | Máxima calidad en razonamiento y tool calling estable | Privacidad, coste cero en hardware propio, air-gapped |
-| **Endpoint** | API oficial Messages (`api.anthropic.com`) | Cualquier base que exponga **`/v1/chat/completions`** (Ollama, vLLM, Groq, OpenAI, gateways) |
-| **Variable clave** | `ANTHROPIC_API_KEY` (obligatoria si no usás `API_BASE_URL`) | `API_BASE_URL` (p. ej. `http://127.0.0.1:11434/v1` para Ollama) |
-| **Modelos típicos** | **Claude** (p. ej. `claude-3-5-sonnet-20241022`, o el default del paquete `claude-sonnet-4-20250514` vía `ANTHROPIC_MODEL`) | **Ollama:** `llama3.2`, `qwen2.5-coder`, etc.; **OpenAI:** vía `https://api.openai.com/v1` + `OPENAI_API_KEY` |
-| **Autenticación extra** | — | `OPENAI_API_KEY` / `API_KEY` / `ANTHROPIC_API_KEY` como Bearer **solo si** el servidor lo exige (Ollama local suele ir sin token) |
+- Un reemplazo de chat genérico sin efectos en disco.
+- Una única ida y vuelta a la API.
+- Respuestas de memoria sobre rutas y archivos sin leer el disco.
+- Un cierre informal de la tarea sin contraste con la spec.
 
-> **Un solo flujo en tu repo:** el CLI no te obliga a bifurcar lógica de producto; solo cambiás variables de entorno y el modelo.
+**Qué sí es**
+
+- Un **agente de software autónomo** orientado a tareas en tu workspace.
+- Un **bucle multi-turno** con herramientas (`read_text_file`, `list_directory`, `str_replace_edit`) hasta terminar o agotar el límite de turnos.
+- Un flujo que **prioriza leer el contexto real** (FS, spec, diffs) antes de afirmar.
+- Con `--spec`, un protocolo que pide **`VERIFICATION_PASS`** tras contrastar el trabajo con la spec.
+
+En la práctica: escribís o mantenés specs en `.md`, **mapeás el proyecto** con `run`, y **delegás la ejecución** al comando `agent`.
 
 ---
 
-## 📦 Ecosistema de comandos
+## Arquitectura: nube (Anthropic) vs local (OpenAI-compatible)
 
-### `init` — estructura bajo `specs/`
+El runtime usa **`fetch` nativo (Node 18+)** y un solo mecanismo de transporte según entorno:
 
-Instala el pipeline en el proyecto (o en el home del usuario, según el asistente interactivo): plantillas, `pipeline.config.yaml`, árbol **`specs/`** y configuración alineada a **Cursor, Windsurf y entornos similares**. Es el punto de partida para que el equipo comparta el mismo marco spec-driven.
+**Cloud (Anthropic)**
+
+- Uso: máxima calidad en razonamiento y tool calling estable.
+- Endpoint: API oficial Messages (`api.anthropic.com`).
+- Variable: `ANTHROPIC_API_KEY` (obligatoria si no usás `API_BASE_URL`).
+- Modelos: **Claude** (por ejemplo `claude-3-5-sonnet-20241022`; default del paquete `claude-sonnet-4-20250514` vía `ANTHROPIC_MODEL`).
+
+**Local / OpenAI-compatible (Ollama, vLLM, Groq, OpenAI, gateways)**
+
+- Uso: privacidad, coste cero en hardware propio, entornos air-gapped.
+- Endpoint: base que exponga **`/v1/chat/completions`** (ejemplo Ollama: `http://127.0.0.1:11434/v1`).
+- Variable: `API_BASE_URL`.
+- Modelos: `llama3.2`, `qwen2.5-coder`, etc.; OpenAI vía `https://api.openai.com/v1` y `OPENAI_API_KEY`.
+- Bearer opcional: `OPENAI_API_KEY`, `API_KEY` o `ANTHROPIC_API_KEY` si el servidor lo exige (Ollama local suele ir sin token).
+
+**Un solo flujo en tu repo:** solo cambiás variables de entorno y el modelo.
+
+---
+
+## Comandos
+
+### init
+
+Instala el pipeline: plantillas, `pipeline.config.yaml`, árbol **`specs/`** y configuración para Cursor, Windsurf y similares.
 
 ```bash
 npx spec-driven-pipeline init
 ```
 
-### `run` / `sync` — Auto-Discovery y `project-context.md`
+### run / sync
 
-Alias equivalentes: **`run`** y **`sync`**. Este comando:
-
-- Asegura carpetas bajo la raíz de documentación del pipeline, `specs/config.yaml`, índice de skills y archivos de equipo.
-- Ejecuta **Auto-Discovery** (implementado en `src/lib/projectDiscovery.js`): detecta stack (`package.json`, `go.mod`, `Cargo.toml`, etc.), respeta `.gitignore` y exclusiones de artefactos, y **regenera** `specs/project-context.md` con identidad del repo, scripts útiles, entrypoints heurísticos y un **árbol de directorios** acotado.
+Alias: **`run`** y **`sync`**. Asegura carpetas, `specs/config.yaml`, índice de skills y ejecuta **Auto-Discovery** (`src/lib/projectDiscovery.js`): stack del repo, `.gitignore`, y **`specs/project-context.md`** con entrypoints y árbol acotado.
 
 ```bash
 npx spec-driven-pipeline run
 ```
 
-**Resultado:** el agente y los skills en el IDE **no arrancan ciegos**; el contexto del proyecto queda materializado en disco y se refresca en cada sync.
+### agent
 
-### `agent` — bucle autónomo + skills
-
-Orquesta el **runtime del agente** (`src/agent/runAgent.js` → `src/agent/queryLoop.js`):
-
-- **System prompt** con reglas de comportamiento y protocolo de verificación opcional.
-- **Herramientas reales** (filesystem + edición mínima): `read_text_file`, `list_directory`, `str_replace_edit` (definidas en `src/agent/tools/`).
-- **Bucle multi-turno:** si el modelo devuelve `tool_use` (Anthropic) o `tool_calls` (OpenAI-compatible), el código **ejecuta** las herramientas, inyecta `tool_result` en el historial y **vuelve a llamar a la API** hasta que el asistente responde solo texto, aparece **`VERIFICATION_PASS`**, o se alcanza **`SPEC_AGENT_MAX_TURNS`**.
-- **Nudges** de continuación si la respuesta queda cortada o vacía (acotadas por `SPEC_AGENT_MAX_NUDGES`).
-- **Verificación de spec** opcional con `--spec` o `SPEC_VERIFICATION_PATH`: rondas guiadas con `VERIFICATION_PASS` y remediación acotada (`SPEC_AGENT_MAX_VERIFICATION_GAPS`).
+Runtime en `src/agent/runAgent.js` y `src/agent/queryLoop.js`: herramientas reales, bucle multi-turno, nudges opcionales, verificación con `--spec` o `SPEC_VERIFICATION_PATH` y token **`VERIFICATION_PASS`**.
 
 ```bash
-# Anthropic (ejemplo)
 export ANTHROPIC_API_KEY="sk-ant-api03-..."
 export ANTHROPIC_MODEL="claude-3-5-sonnet-20241022"
 npx spec-driven-pipeline agent "Auditoría: listá src/ y resumí la estructura"
 
-# Con verificación explícita contra una spec
 npx spec-driven-pipeline agent --spec specs/changes/mi-epica/spec.md "Implementá los criterios pendientes y cerrá con verificación"
 ```
 
@@ -86,116 +89,83 @@ Logs de turnos en stderr:
 SPEC_AGENT_VERBOSE=1 npx spec-driven-pipeline agent "Tu instrucción"
 ```
 
-#### 🧩 Las 33 Specialized Skills (plantillas)
-
-En `templates/skills/` hay **33 skills** alineadas al baseline [Zero-Guesswork](templates/_shared/zero-guesswork-system.md). Cubren, entre otras áreas:
-
-- **Arquitectura y estructura:** FSD (`fsd-architecture-planner`, `fsd-structure-validator`), impacto y reuso (`code-area-impact-detector`, `reuse-before-create`).
-- **Épicas y alcance:** `epic-input-validator`, `epic-scope-analyzer`, `epic-domain-extractor`, `ai-archiver`, `ai-path-generator`.
-- **Calidad y QA:** matrices de pruebas, casos límite, validación de inputs (`qa-*`, `analysis-input-validator`).
-- **Implementación y riesgo:** cambios mínimos, decisiones técnicas, gaps y riesgos (`minimal-change-implementer`, `technical-*`, `risk-mitigation-planner`).
-- **Repo y estilo:** escaneo de código/estructura, estilo, diffs, commits convencionales (`repo-*`, `code-style-*`, `diff-change-detector`, `conventional-commit-generator`).
-
-El comando `agent` del **CLI** usa las **herramientas de código** anteriores; las **skills** son el **catálogo de prompts** para flujos en el IDE (p. ej. pasos del pipeline). Ambos se apoyan en la misma filosofía de evidencia.
+**Skills (33 plantillas)** en `templates/skills/`, alineadas a [Zero-Guesswork](templates/_shared/zero-guesswork-system.md): arquitectura FSD, épicas, QA, riesgo, repo, estilo, diffs, commits, etc. El CLI usa **herramientas de código**; las skills son el catálogo para flujos en el IDE.
 
 ---
 
-## 🧠 Filosofía Zero-Guesswork y `VERIFICATION_PASS`
+## Zero-Guesswork y VERIFICATION_PASS
 
-| Principio | En la práctica |
-| :--- | :--- |
-| **Cero adivinanza** | Skills y baseline piden **evidencia** (rutas leídas, contenido de `spec.md` / `tasks.md`, diffs) antes de afirmar cierre. |
-| **Contexto antes que alucinar** | El agente está incentivado a **listar y leer** con herramientas en lugar de inventar árboles de archivos. |
-| **Cierre con spec** | Con `--spec` / `SPEC_VERIFICATION_PATH`, el bucle puede pedir al modelo que **releva la spec** y emita un informe; el proceso termina de forma determinística cuando el texto incluye la línea con el token exacto **`VERIFICATION_PASS`** (o se agotan las rondas de remediación). |
+- **Cero adivinanza:** evidencia (rutas leídas, `spec.md` / `tasks.md`, diffs) antes de cerrar.
+- **Contexto antes que alucinar:** listar y leer con herramientas.
+- **Cierre con spec:** con `--spec`, el bucle puede pedir releer la spec; el proceso termina cuando el texto incluye **`VERIFICATION_PASS`** o se agotan las rondas de remediación.
 
-Referencia del baseline: [`templates/_shared/zero-guesswork-system.md`](templates/_shared/zero-guesswork-system.md).
+Baseline: [`templates/_shared/zero-guesswork-system.md`](templates/_shared/zero-guesswork-system.md)
 
 ---
 
-## 🔄 Flujo de trabajo recomendado
+## Flujo de trabajo
 
-> **Nota (npmjs.com):** el sitio no renderiza diagramas Mermaid; este flujo se describe en texto para que el README se muestre bien en el registro.
-
-| Paso | Acción |
-| :--- | :--- |
-| 1 | Escribir o actualizar la spec (`.md` bajo tu convención en `specs/`) |
-| 2 | `npx spec-driven-pipeline run` o `sync` → genera/actualiza `specs/project-context.md` |
-| 3 | `npx spec-driven-pipeline agent "…"` (opcional `--spec` para verificación) |
-| 4 | Si usás verificación: iterar hasta **`VERIFICATION_PASS`** o alcanzar el límite de rondas |
-
-1. **Especificar** — Definí requisitos en Markdown bajo tu convención de `specs/` (ver `docs/spec-formato-unificado.md` y plantillas en `templates/`).
-2. **Mapear** — `npx spec-driven-pipeline run` para regenerar `project-context.md` y mantener el índice de skills.
-3. **Ejecutar** — `npx spec-driven-pipeline agent "..."` (y `--spec` si querés el protocolo de verificación contra un archivo concreto).
+1. Escribir o actualizar la spec (`.md` bajo tu convención en `specs/`).
+2. `npx spec-driven-pipeline run` para `specs/project-context.md` y el índice de skills.
+3. `npx spec-driven-pipeline agent "..."` (opcional `--spec` para verificación).
 
 ---
 
-## 🦙 Guía rápida: configuración local con Ollama
-
-Ideal para **privacidad** (el código no sale de tu red) y **ahorro** (sin facturación por token si el modelo corre en tu máquina).
+## Ollama (local)
 
 ```bash
-# Servidor Ollama escuchando en OpenAI-compatible /v1
 export API_BASE_URL="http://127.0.0.1:11434/v1"
-
-# Modelos ligeros (CPU / poca VRAM) — ejemplo familia Qwen Coder
 export ANTHROPIC_MODEL="qwen2.5-coder:1.5b"
-# o
-export ANTHROPIC_MODEL="qwen2.5-coder:3b"
+# o: qwen2.5-coder:3b
 
 npx spec-driven-pipeline agent "Listá el directorio src/ con profundidad máxima 2"
 ```
 
-> **Nota:** `ANTHROPIC_MODEL` es el nombre del modelo **en el servidor** (Ollama/OpenAI/etc.), no solo Anthropic.
-
-**Requisito:** el modelo debe soportar **tool calling** de forma razonable; si no, ver [Troubleshooting](#-troubleshooting).
+`ANTHROPIC_MODEL` es el nombre del modelo **en el servidor** (no solo Anthropic). El modelo debe soportar **tool calling**. Más ayuda en la sección **Troubleshooting** abajo.
 
 ---
 
-## ⚙️ Variables de entorno (referencia)
+## Variables de entorno
 
-| Variable | Obligatoria | Rol |
-| :--- | :---: | :--- |
-| `ANTHROPIC_API_KEY` | Sí*, sin `API_BASE_URL` | Clave de la API Anthropic (modo cloud). |
-| `API_BASE_URL` | No | Si está definida, se usa el transporte **OpenAI-compatible** (`…/chat/completions`). |
-| `OPENAI_API_KEY` / `API_KEY` | No | Bearer para backends que lo exijan (OpenAI, Groq, etc.). |
-| `ANTHROPIC_MODEL` | No | Modelo remoto o local. Default en código: `claude-sonnet-4-20250514`. |
-| `SPEC_VERIFICATION_PATH` | No | Ruta a la spec (equivalente a `--spec` en `agent`). |
-| `SPEC_AGENT_MAX_TURNS` | No | Máximo de **vueltas** del bucle principal (default **32**). |
-| `SPEC_AGENT_MAX_NUDGES` | No | Máximo de **nudges** de continuación (default **3**). |
-| `SPEC_AGENT_MAX_VERIFICATION_GAPS` | No | Máximo de **rondas** de remediación sin `VERIFICATION_PASS` (default **6**). |
-| `SPEC_AGENT_VERBOSE` | No | `1` = log de turnos en stderr. |
+- **`ANTHROPIC_API_KEY`**: obligatoria sin `API_BASE_URL` (modo Anthropic).
+- **`API_BASE_URL`**: activa transporte OpenAI-compatible (`…/chat/completions`).
+- **`OPENAI_API_KEY` / `API_KEY`**: Bearer si el backend lo pide.
+- **`ANTHROPIC_MODEL`**: modelo remoto o local (default en código: `claude-sonnet-4-20250514`).
+- **`SPEC_VERIFICATION_PATH`**: ruta a la spec (equivalente a `--spec`).
+- **`SPEC_AGENT_MAX_TURNS`**: tope de vueltas (default **32**).
+- **`SPEC_AGENT_MAX_NUDGES`**: nudges de continuación (default **3**).
+- **`SPEC_AGENT_MAX_VERIFICATION_GAPS`**: rondas de remediación (default **6**).
+- **`SPEC_AGENT_VERBOSE`**: `1` para log de turnos en stderr.
 
-\*Con `API_BASE_URL` (p. ej. Ollama local), la clave deja de ser obligatoria.
+Con `API_BASE_URL` (Ollama local), la clave de Anthropic deja de ser obligatoria.
 
 ---
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
-### Ollama: errores de memoria (OOM) o proceso terminado
+**Ollama y memoria**
 
-| Síntoma | Qué probar |
-| :--- | :--- |
-| `signal: killed`, `out of memory`, o el modelo cae al cargar | Bajá de tamaño: `qwen2.5-coder:1.5b` en lugar de `3b`, o un modelo cuantizado más pequeño. |
-| El sistema se vuelve lentísimo | Cerrá otras apps; en Linux, **no** compitas por RAM con builds grandes en paralelo. |
-| `CUDA error` / VRAM | Usá modelo menor, cuantización mayor, o forzá CPU en Ollama si tu GPU es justa. |
+- Proceso muerto u OOM: probá un modelo más chico (`qwen2.5-coder:1.5b` vs `3b`) o más cuantizado.
+- Sistema lento: cerrar otras apps; no competir por RAM con builds enormes en paralelo.
+- Errores CUDA / VRAM: modelo menor, más cuantización, o CPU en Ollama.
 
-### Tool calling degradado o herramientas ignoradas
+**Tool calling**
 
-- Confirmá que el modelo declare **soporte de tools** en Ollama (`ollama show <modelo>`).
-- Si la API responde `tool_use` pero el parser no ve herramientas, revisá que el backend sea **compatible** con el esquema OpenAI (`tool_calls` en `choices[0].message`).
+- Verificá soporte con `ollama show <modelo>`.
+- El backend debe devolver `tool_calls` en el mensaje del asistente (esquema OpenAI).
 
-### El agente termina muy pronto
+**El agente corta muy pronto**
 
-- Subí `SPEC_AGENT_MAX_TURNS` con prudencia.
-- Activá `SPEC_AGENT_VERBOSE=1` para ver `needsFollowUp` y el estado de verificación.
+- Aumentá `SPEC_AGENT_MAX_TURNS` con cuidado.
+- Usá `SPEC_AGENT_VERBOSE=1`.
 
-### `API_BASE_URL` incorrecta
+**API_BASE_URL**
 
-- Debe apuntar a la **raíz** tipo OpenAI (`https://host/v1` o `http://127.0.0.1:11434/v1`). El CLI añade `/chat/completions` si falta.
+- Debe ser la raíz tipo OpenAI (`https://host/v1` o `http://127.0.0.1:11434/v1`). El CLI agrega `/chat/completions` si falta.
 
 ---
 
-## 📚 Instalación y documentación adicional
+## Instalación y docs
 
 ```bash
 npm install spec-driven-pipeline --save-dev
@@ -203,15 +173,13 @@ npx spec-driven-pipeline init
 npx spec-driven-pipeline run
 ```
 
-| Recurso | Contenido |
-| :--- | :--- |
-| [docs/guia-equipos.md](docs/guia-equipos.md) | Equipos, `config.yaml`, onboarding |
-| [docs/spec-formato-unificado.md](docs/spec-formato-unificado.md) | Formato unificado de specs |
-| [templates/spec-unified-template.md](templates/spec-unified-template.md) | Plantilla canónica |
-| [templates/_shared/zero-guesswork-system.md](templates/_shared/zero-guesswork-system.md) | Baseline Zero-Guesswork |
+- [docs/guia-equipos.md](docs/guia-equipos.md)
+- [docs/spec-formato-unificado.md](docs/spec-formato-unificado.md)
+- [templates/spec-unified-template.md](templates/spec-unified-template.md)
+- [templates/_shared/zero-guesswork-system.md](templates/_shared/zero-guesswork-system.md)
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 **MIT** — ver [LICENSE](LICENSE).
