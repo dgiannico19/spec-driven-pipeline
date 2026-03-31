@@ -114,15 +114,14 @@ Referencia del baseline: [`templates/_shared/zero-guesswork-system.md`](template
 
 ## 🔄 Flujo de trabajo recomendado
 
-```mermaid
-flowchart LR
-  A[Escribir spec .md] --> B[run o sync]
-  B --> C[project-context.md]
-  C --> D[agent]
-  D --> E{Alineado a spec}
-  E -->|VERIFICATION_PASS| F[Hecho]
-  E -->|Gaps| D
-```
+> **Nota (npmjs.com):** el sitio no renderiza diagramas Mermaid; este flujo se describe en texto para que el README se muestre bien en el registro.
+
+| Paso | Acción |
+| :--- | :--- |
+| 1 | Escribir o actualizar la spec (`.md` bajo tu convención en `specs/`) |
+| 2 | `npx spec-driven-pipeline run` o `sync` → genera/actualiza `specs/project-context.md` |
+| 3 | `npx spec-driven-pipeline agent "…"` (opcional `--spec` para verificación) |
+| 4 | Si usás verificación: iterar hasta **`VERIFICATION_PASS`** o alcanzar el límite de rondas |
 
 1. **Especificar** — Definí requisitos en Markdown bajo tu convención de `specs/` (ver `docs/spec-formato-unificado.md` y plantillas en `templates/`).
 2. **Mapear** — `npx spec-driven-pipeline run` para regenerar `project-context.md` y mantener el índice de skills.
