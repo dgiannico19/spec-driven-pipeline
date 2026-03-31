@@ -1,30 +1,39 @@
 ---
 name: qa-input-validator
-description: Verifica que existan los outputs de Steps 1–3 antes de generar documentación QA.
+description: Verifica que existan los artefactos de la épica necesarios antes de Step 4 (spec, design, tasks como mínimo).
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Validar que el agente tenga todos los insumos necesarios.
+## Objetivo
 
-Inputs obligatorios
+Bloquear Step 4 si faltan **insumos verificables** en `specs/changes/[FOLDER]/`.
 
-Step 1 – Epic Analyzer  
-Step 2 – Repo Impact Analyzer  
-Step 3 – Functional Analysis
+## Inputs obligatorios (típico)
 
-Validaciones
+- `spec.md` (borrador mínimo).
+- `design.md` (Step 3 completado).
+- `tasks.md` (para alinear carga de QA con trabajo planeado).
 
-Los tres reportes existen.
+**Opcional según equipo:** `exploration.md` si Step 2 es obligatorio en vuestro flujo.
 
-Contienen información estructurada.
+## Validaciones
 
-Si falta alguno
+- Los archivos **existen** en la ruta de la épica (no asumir nombre de carpeta: **verificar** listado).
+- Contienen secciones **no vacías** relevantes (al menos un requisito y un diseño de alto nivel).
 
-Declarar bloqueo explícito.
+## Si falta algo
 
-No continuar el proceso.
+- Estado **BLOQUEADO**.
+- Lista **exacta** de qué archivo falta o qué sección está vacía.
+- **No** generar `testing.md` hasta desbloquear.
 
-Salida
+## Salida
 
-Confirmación de que el proceso puede continuar.
+`OK` + lista de archivos verificados, **o** `BLOQUEADO` + lista de faltantes.
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| Nombres “Step 1 Epic Analyzer” sin archivo | Rutas reales bajo `specs/changes/...` |

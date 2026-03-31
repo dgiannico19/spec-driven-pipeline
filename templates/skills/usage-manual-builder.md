@@ -1,36 +1,37 @@
 ---
 name: usage-manual-builder
-description: Construye el manual de uso observable del sistema basado en el análisis funcional consolidado.
+description: Manual de uso observable para QA: flujos, precondiciones y outputs, solo desde fuentes verificadas.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Traducir el análisis funcional a documentación ejecutable por QA.
+## Objetivo
 
-Debe incluir
+Traducir **comportamiento acordado** en `spec.md` / `design.md` a pasos que un humano puede **ejecutar** sin adivinar rutas.
 
-Contexto funcional.
+## Debe incluir
 
-Vistas involucradas.
+- Contexto funcional (1 párrafo, citando spec).
+- **Superficies** involucradas (vista, endpoint, comando).
+- Precondiciones (datos, usuario, feature flags).
+- Flujo **paso a paso** numerado.
+- Inputs esperados (formato).
+- Outputs observables (qué ver en UI / respuesta / log).
+- Validaciones mencionadas en spec.
+- Limitaciones explícitas (qué **no** cubre el manual).
 
-Precondiciones necesarias.
+## Restricciones
 
-Flujo funcional paso a paso.
+- Solo información **presente** en documentos de la épica; si falta detalle, **no inventes** — marcar `TBD` en esa sección.
+- No infieras detalle técnico interno no documentado salvo que `design.md` lo indique.
 
-Inputs esperados.
+## Salida
 
-Outputs observables.
+Manual en Markdown claro para pegar en `testing.md` o anexo.
 
-Validaciones detectadas.
+## Anti-patrones
 
-Limitaciones documentadas.
-
-Restricciones
-
-Solo usar información presente en Steps 1–3.
-
-No inferir comportamiento técnico.
-
-Salida
-
-Manual claro y ejecutable por QA.
+| Evitar | Hacer |
+| :--- | :--- |
+| “El sistema valida” sin criterio | Criterio citado de spec |
+| URLs inventadas | “Abrir pantalla X según diseño” o ruta real |

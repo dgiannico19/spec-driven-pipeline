@@ -1,32 +1,37 @@
 ---
 name: functional-objective-consolidator
-description: Consolida el objetivo funcional de la épica considerando las restricciones técnicas detectadas.
+description: Consolida el objetivo funcional con limitaciones técnicas del Step 2; sin ocultar conflictos.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Ajustar el objetivo funcional de la épica a la realidad técnica del sistema.
+## Objetivo
 
-Analizar
+Producir un **objetivo único** alineado a **spec + exploration** sin borrar tensiones.
 
-Objetivo funcional del Step 1.
+## Entradas
 
-Limitaciones detectadas en Step 2.
+- Objetivo / alcance del Step 1.
+- Hallazgos de `exploration.md` (brechas, limitaciones, riesgos).
 
-Detectar
+## Proceso
 
-Suposiciones funcionales inválidas.
+1. Listá **suposiciones del Step 1** que el código **invalida** o **debilita**.
+2. Listá **restricciones técnicas** concretas (rutas, módulos frágiles).
+3. Redactá **objetivo consolidado** que sea **implementable** sin mentir sobre el estado actual.
+4. Si hay conflicto irresoluble: **bloqueo** o **decisión humana** explícita (no “resolver” en silencio).
 
-Restricciones técnicas relevantes.
-
-Resultado
-
-Objetivo funcional realista para la implementación.
-
-Formato
+## Formato
 
 ## Objetivo funcional consolidado
 
-## Ajustes necesarios
+## Ajustes necesarios respecto al Step 1
 
 ## Suposiciones descartadas
+_(con motivo desde exploration.md)_
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| Objetivo “bonito” que contradice exploration | Objetivo honesto + riesgo explícito |

@@ -1,30 +1,41 @@
 ---
 name: diff-change-detector
-description: Detecta los cambios locales en el repositorio para determinar qué debe revisarse.
+description: Identifica archivos cambiados en el working tree para acotar revisión; sin diff = sin revisión.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Identificar qué archivos han sido modificados o creados.
+## Objetivo
 
-Analizar
+Listar **exactamente** qué revisar según `git status` / diff (o equivalente). Sin suposiciones sobre archivos no tocados.
 
-Working tree.
+## Analizar
 
-Cambios staged o unstaged.
+- Working tree: staged y unstaged.
+- Renombres y borrados.
 
-Identificar
+## Identificar
 
-Archivos modificados.
+- Modificados / nuevos / eliminados con **ruta relativa al repo**.
 
-Archivos nuevos.
+## Determinar
 
-Archivos eliminados.
+- Qué archivos entran en **scope de review** del Step 6 u otro paso.
 
-Determinar
+## Si no hay cambios
 
-Qué partes del código requieren revisión.
+- **Detener** revisión de código; informar “sin cambios locales”.
 
-Si no hay cambios
+## Salida
 
-Detener revisión.
+## Archivos tocados
+| Ruta | Estado |
+
+## Alcance sugerido de revisión
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| “Revisá todo src/” | Solo paths del diff |
+| Inventar archivos modificados | Salida de git |

@@ -1,42 +1,42 @@
 ---
 name: technical-risk-detector
-description: Detecta riesgos técnicos y deuda estructural en las áreas analizadas del repositorio.
+description: Reporta riesgos estructurales en áreas analizadas; sin soluciones, con evidencia en rutas.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Identificar riesgos técnicos asociados al código actual.
+## Objetivo
 
-Analizar
+Listar **riesgos observados** en el código o estructura **sin** proponer refactor completo (eso es otro step).
 
-Acoplamientos fuertes.
+## Analizar (según evidencia leída)
 
-Módulos frágiles.
+- Acoplamientos fuertes entre módulos.
+- Módulos frágiles (muchas dependencias, sin tests).
+- Dependencias circulares **si** el IDE o herramienta las muestra.
+- Utils “basura” o sobrecarga.
+- Límites de módulo poco claros.
 
-Dependencias circulares.
+## Detectar
 
-Utils sobrecargados.
+- Riesgo de regresión al tocar el área.
+- Deuda técnica **relevante** al cambio propuesto (no toda la deuda del repo).
 
-Falta de encapsulación.
+## Restricciones
 
-Detectar
+- No proponer soluciones detalladas.
+- Cada ítem debe anclarse a **archivo o carpeta** concreta cuando sea posible.
 
-Riesgos de regresión.
-
-Deuda técnica relevante.
-
-Límites de módulos poco claros.
-
-Restricciones
-
-No proponer soluciones.
-
-Solo reportar riesgos.
-
-Formato de salida
+## Formato de salida
 
 ## Riesgos detectados
 
 ## Código frágil
 
-## Deuda técnica relevante
+## Deuda técnica relevante al alcance
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| “El código es malo” | Archivo + síntoma observable |

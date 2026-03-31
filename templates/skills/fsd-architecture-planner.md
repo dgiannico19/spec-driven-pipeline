@@ -1,53 +1,45 @@
 ---
 name: fsd-architecture-planner
-description: Propone una distribución conceptual de responsabilidades basada en la arquitectura definida en repo-architecture-rule.md.
+description: Distribuye responsabilidades de la épica en capas según repo-architecture-rule.md; conceptual, sin rutas inventadas.
 uses:
   - rules/repo-architecture-rule.md
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md) — este skill **no** inventa arquitectura nueva; **interpreta** la épica dentro de la regla del repo.
 
-Definir cómo deberían organizarse las responsabilidades de la épica dentro de la arquitectura objetivo del repositorio.
+## Objetivo
 
-La arquitectura base se define en:
+Decidir **qué tipo de lógica** (no paths exactos) pertenece a cada capa permitida por `repo-architecture-rule.md`.
 
-repo-architecture-rule.md
+## Análisis
 
-Este skill NO define una arquitectura nueva.
-Este skill interpreta la épica dentro de la arquitectura existente.
+Para cada capa relevante (**features**, **entities**, **widgets**, **shared**, **pages**, **app** o equivalente):
 
-Análisis requerido
+- Qué lógica **debería** vivir ahí para esta épica.
+- Qué **no** debe colocarse ahí (para evitar dependencias invertidas).
 
-Determinar qué responsabilidades pertenecen conceptualmente a:
+## Restricciones
 
-features/
-entities/
-widgets/
-shared/
-pages/
+- **No** listar rutas de archivos concretos (eso es Step 3 detallado / exploration).
+- **No** proponer estructuras que violen `repo-architecture-rule.md`.
+- Si el repo **no** es FSD puro, adaptá los nombres de capa a la **regla** y documentá el mapeo.
 
-Para cada capa explicar:
-
-- Qué lógica debería vivir allí
-- Qué responsabilidades corresponden a la épica
-- Qué responsabilidades NO deberían colocarse en esa capa
-
-Restricciones
-
-No definir rutas reales.
-No listar archivos concretos.
-No proponer estructuras que violen repo-architecture-rule.md.
-
-Formato de salida
+## Formato de salida
 
 ## Arquitectura conceptual
 
 ### features
-
 ### entities
-
 ### widgets
-
 ### shared
-
 ### pages
+_(o las que aplique la regla)_
+
+## Mapeo si el repo usa nombres distintos
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| “Creá src/features/foo” aquí | Solo responsabilidades; rutas en design.md |
+| Violación de capas por comodidad | Regla explícita |

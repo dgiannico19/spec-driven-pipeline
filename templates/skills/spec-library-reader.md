@@ -1,26 +1,58 @@
 ---
 name: spec-library-reader
-description: Escanea y extrae definiciones técnicas de specs/library/ para continuidad arquitectónica.
-
-logic:
-  - Identificar términos clave en el `proposal.md` y `spec.md` (ej. "Componente Svg", "Hook de Auth").
-  - Buscar archivos `.md` en `specs/library/` que coincidan con esos términos.
-  - Leer el contenido de las specs encontradas, priorizando secciones de decisiones y reglas.
-  - Comparar si la spec oficial coincide con lo que el `repo-structure-scanner` encuentra en el código real.
-  - Alertar si existe una contradicción (ej. La spec dice usar X, pero el código usa Y).
-
-rules:
-  - Si no existe una spec para un componente, marcarlo como "Módulo sin documentación oficial".
-  - No debe intentar editar las specs de librería salvo que el workflow lo indique; en Step 2 priorizar lectura para `exploration.md`.
-  - Debe listar las rutas de las specs consultadas para trazabilidad.
-
-input:
-  keywords: ["lista", "de", "terminos", "tecnicos"]
-  specs_path: "specs/library/"
-
-output:
-  found_specs: [
-    { "name": "SvgComponent.md", "path": "specs/library/SvgComponent.md", "content_summary": "..." }
-  ]
-  warnings: ["No se encontró spec para el módulo 'Analytics'"]
+description: Escanea specs/library/ con términos tomados de proposal/spec, lectura verificable y comparación con el código; sin rutas inventadas.
 ---
+
+## Objetivo
+
+Extraer definiciones técnicas de `specs/library/` alineadas a términos de `proposal.md` y `spec.md`, y **contrastar** con lo que el código real expone — mismo espíritu que “tool results may include external data; watch for contradictions” en prompts de sistema.
+
+---
+
+## Entrada (implícita en el flujo del agente)
+
+- **keywords**: derivá una lista corta desde títulos de capacidades, nombres de módulos y términos en **Requirements** (no inventes keywords sin anclaje en esos documentos).
+- **specs_path**: `specs/library/` (salvo que el equipo use otra ruta en `pipeline.config.yaml` — **leé** la config antes de asumir).
+
+---
+
+## Procedimiento (paso a paso)
+
+1. **Listar o buscar**: enumerá archivos `.md` bajo `specs/library/` (o usá búsqueda del IDE / grep por keyword sobre ese árbol).
+2. **Leer**: para cada candidato relevante, leé el archivo **completo** o las secciones de decisiones/reglas (si es largo, leé al menos el encabezado y la sección que define contrato).
+3. **Anotar trazabilidad**: en la salida del agente, listá **`ruta exacta`** de cada spec consultada (anti-“hay una doc en library” sin nombre de archivo).
+4. **Comparar con código**: cruzá con hallazgos de `repo-structure-scanner` / código real; si la spec dice X y el código hace Y, **registrá contradicción explícita** (no la ignores).
+5. **Vacío**: si no hay spec para un módulo, declará **“Módulo sin documentación oficial en specs/library”** — no inventes contenido.
+
+---
+
+## Reglas
+
+- **No editar** `specs/library/` salvo que el workflow del step lo indique; en Step 2 priorizá lectura para alimentar `exploration.md`.
+- **No inventes** nombres de archivo en `specs/library/`; si no estás seguro, **listá el directorio** primero.
+
+---
+
+## Salida esperada (plantilla)
+
+```markdown
+## Specs de librería consultadas
+| Archivo | Qué aporta al análisis |
+| :--- | :--- |
+| `specs/library/....md` | ... |
+
+## Contradicciones código vs library
+- ...
+
+## Módulos sin doc en library
+- ...
+```
+
+---
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| Resumir una spec sin haber abierto el archivo | Citar ruta + extracto o sección |
+| Asumir que `SvgComponent.md` existe | Listar `specs/library/` y confirmar nombre |

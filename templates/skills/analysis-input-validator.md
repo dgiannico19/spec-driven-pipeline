@@ -1,30 +1,31 @@
 ---
 name: analysis-input-validator
-description: Verifica que estén disponibles los reportes del Step 1 y Step 2 antes de construir el análisis funcional.
+description: Verifica proposal + exploration (o equivalentes) antes de consolidar análisis funcional/técnico en Step 3.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Validar que el análisis funcional tenga todos los inputs necesarios.
+## Objetivo
 
-Requisitos obligatorios
+Asegurar que Step 3 tenga **proposal** y **exploration** (o los artefactos que vuestro flujo exija) **presentes y no vacíos** en la carpeta de la épica.
 
-Reporte del Step 1 (Epic Analyzer)
+## Requisitos típicos
 
-Reporte del Step 2 (Repo Impact Analyzer)
+- `proposal.md` con Why/What mínimo.
+- `exploration.md` con hallazgos de código (Step 2 completado).
 
-Validaciones
+## Validaciones
 
-Ambos reportes existen.
+- Rutas bajo `specs/changes/[FOLDER]/` **verificadas** con listado o lectura.
+- Secciones críticas no vacías (definir cuáles exige el equipo).
 
-Ambos contienen información estructurada.
+## Si falta algo
 
-Si falta alguno
+- **BLOQUEADO** + lista de archivos o secciones faltantes.
+- No generar `design.md` hasta desbloquear.
 
-Informar bloqueo explícito.
+## Anti-patrones
 
-No continuar el análisis.
-
-Salida
-
-Confirmación de que el análisis puede continuar.
+| Evitar | Hacer |
+| :--- | :--- |
+| Nombres genéricos “reporte Step 1” | `proposal.md`, `exploration.md` |

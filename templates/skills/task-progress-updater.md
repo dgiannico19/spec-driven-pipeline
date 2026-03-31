@@ -1,24 +1,36 @@
 ---
 name: task-progress-updater
-description: Manipula Markdown en specs/changes/ para marcar tareas como completadas.
-
-logic:
-  - Leer el contenido actual de `specs/changes/[FOLDER-NAME]/tasks.md`.
-  - Localizar la línea que coincide con el ID o descripción de la tarea recién implementada.
-  - Reemplazar el patrón `- [ ]` por `- [x]` exactamente en esa línea.
-  - Si la tarea tiene sub-tareas, asegurar que el padre se marque solo si los hijos están listos (opcional).
-  - Sobrescribir el archivo con el nuevo estado.
-
-rules:
-  - NUNCA borrar contenido, solo reemplazar `[ ]` por `[x]`.
-  - Mantener la indentación original del archivo para no romper el formato Markdown.
-  - Si la tarea no se encuentra, lanzar un error para que el agente verifique si el diseño cambió.
-
-input:
-  task_id: "ID o texto de la tarea"
-  folder_path: "specs/changes/YYYY-MM-DD-nombre-slug/"
-
-output:
-  success: boolean
-  updated_file: "path/to/tasks.md"
+description: Actualiza tasks.md marcando [x] sin alterar otras líneas; falla si la tarea no existe.
 ---
+
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md) — **parámetros exactos** (ID o texto de línea).
+
+## Objetivo
+
+Tras completar una tarea, reemplazar **solo** esa línea `- [ ]` → `- [x]` en `specs/changes/[FOLDER-NAME]/tasks.md`.
+
+## Procedimiento
+
+1. Leer `tasks.md` completo.
+2. Localizar la línea por **ID** (ej. `2.3`) o por **texto exacto** de la tarea.
+3. Reemplazar un único `[ ]` en esa línea por `[x]`.
+4. Si hay subtareas, marcar padre solo si **todas** las hijas están `[x]` (política del equipo).
+5. Escribir archivo preservando **indentación** y saltos de línea.
+
+## Reglas
+
+- **NUNCA** borrar contenido ni tareas no completadas.
+- Si no encontrás la tarea: **error** explícito — no inventes línea nueva.
+- Si el diseño cambió, pedí actualización de `tasks.md` al humano antes de marcar al azar.
+
+## Entrada esperada
+
+- `folder_path`: `specs/changes/YYYY-MM-DD-slug/`
+- `task_id` o fragmento único de la línea completada.
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| Marcar todas las [ ] | Una sola tarea verificada |
+| Reescribir archivo entero | Diff mínimo |

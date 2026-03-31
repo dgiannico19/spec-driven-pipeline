@@ -1,20 +1,32 @@
 ---
 name: fsd-structure-validator
-description: Verifica que el repositorio tenga estructura compatible con Feature Slice Design.
+description: Verifica compatibilidad con la estructura esperada (FSD u otra del repo); bloquea si falta base sin decisión explícita.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Evitar que el agente improvise estructura.
+## Objetivo
 
-Validar
+Evitar que el agente **improvise** carpetas o capas que contradigan `repo-architecture-rule.md` o la estructura real.
 
-Existencia de capas FSD.
+## Validar
 
-Ubicación correcta de features.
+- Existencia de las **capas** que el repo usa (no forzar FSD si el repo es otro).
+- Ubicación coherente de features / slices.
+- Separación dominio / UI / infra según la regla.
 
-Separación de dominio.
+## Si la estructura objetivo no existe
 
-Si la estructura objetivo no existe
+- **DETENER** y pedir **decisión explícita** (humanos o ADR): crear capa, migrar, o adaptar el diseño a la estructura real.
 
-DETENER ejecución y solicitar confirmación.
+## Salida
+
+- `CONFORME` + evidencia (rutas listadas), **o**
+- `BLOQUEADO` + qué falta y qué decisión se necesita.
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| Crear `features/foo` sin `features/` en el repo | Validar contra `repo-structure-scanner` |
+| Asumir FSD | Leer `repo-architecture-rule.md` |

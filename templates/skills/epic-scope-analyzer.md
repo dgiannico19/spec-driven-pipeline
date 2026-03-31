@@ -1,32 +1,39 @@
 ---
 name: epic-scope-analyzer
-description: Analiza el alcance funcional de una épica o historia.
+description: Delimita alcance funcional explícito, fuera de alcance e impacto — sin inventar capacidades.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Determinar el alcance funcional real de la épica o historia.
+## Objetivo
 
-Analizar
+Fijar **qué sí** y **qué no** entra en la épica, citando solo lo presente en la entrada del usuario / borrador inicial.
 
-Qué problema se busca resolver.
+## Cadena mínima
 
-Qué comportamientos están incluidos explícitamente.
+1. Listá **objetivo** en una frase (cita o parafraseo del input).
+2. Listá **incluido** con viñetas (solo lo explícito).
+3. Listá **excluido** explícitamente o “no mencionado → fuera de alcance por defecto”.
+4. **Impacto** usuario/negocio en términos observables (sin KPI inventados).
 
-Qué partes NO forman parte del alcance.
+## Restricciones
 
-Impacto esperado para el usuario o negocio.
+- No inventes funcionalidades.
+- No asumas comportamientos no mencionados.
+- Si el input es ambiguo, declará **supuesto explícito** o pedí **una** aclaración.
 
-Restricciones
-
-No inventar funcionalidades.
-No asumir comportamientos no mencionados.
-
-Formato de salida
+## Formato de salida
 
 ## Objetivo funcional
 
-## Alcance funcional
+## Alcance funcional (incluido)
 
 ## Fuera de alcance
 
+## Impacto esperado
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| “También mejoramos performance” sin pedido | Solo lo pedido + supuestos etiquetados |

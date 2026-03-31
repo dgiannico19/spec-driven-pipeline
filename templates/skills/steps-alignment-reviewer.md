@@ -1,28 +1,34 @@
 ---
 name: steps-alignment-reviewer
-description: Verifica coherencia entre el código implementado y las decisiones de Steps 1–5.
+description: Cruza implementación con artefactos de specs/changes; desalineación = hallazgo con evidencia.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Asegurar que la implementación respete el análisis previo.
+## Objetivo
 
-Comparar
+Comprobar que el **código** y los **diffs** respetan lo acordado en `spec.md`, `design.md`, `tasks.md`, `testing.md` y el alcance del `proposal.md`.
 
-Intención funcional (Step 1).
+## Comparar (por evidencia)
 
-Impacto técnico (Step 2).
+- Intención y alcance (spec / proposal).
+- Exploración y candidatos (exploration.md) si aplica al cambio.
+- **Design** vs archivos tocados.
+- **Testing** / CA vs comportamiento observable (o tests existentes).
 
-Alcance funcional (Step 3).
+## Detectar
 
-Casos QA (Step 4).
+- Funcionalidad **fuera de scope** (blast radius).
+- Comportamiento **no documentado** que debería estarlo (o marcar deuda explícita).
+- CA/RF **sin** implementación aparente.
 
-Reglas de implementación (Step 5).
+## Salida
 
-Detectar
+Tabla por hallazgo: **severidad**, **artefacto violado**, **archivo**, **extracto o símbolo**.
 
-Desalineaciones.
+## Anti-patrones
 
-Funcionalidad fuera de scope.
-
-Comportamiento no documentado.
+| Evitar | Hacer |
+| :--- | :--- |
+| “No está alineado” | Citar RF-XX o sección de design |
+| Revisar sin leer spec | Leer artefactos primero |

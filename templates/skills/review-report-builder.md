@@ -1,28 +1,34 @@
 ---
 name: review-report-builder
-description: Construye el reporte final de revisión técnica pre-commit.
+description: Consolida hallazgos en reporte accionable con severidad, evidencia y veredicto; bloqueante explícito.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md) — reporte **fiel**; sin bloqueantes inventados.
 
-Consolidar todos los hallazgos en un reporte claro y accionable.
+## Objetivo
 
-Debe incluir
+Unir resultados de `task-completion-verifier`, `diff-change-detector`, `code-style-reviewer`, `steps-alignment-reviewer`, etc. en **un** documento.
 
-Bloqueantes.
+## Debe incluir
 
-Problemas importantes.
+- **Bloqueantes** (con archivo + motivo + cita spec/design si aplica).
+- **Importantes** (no impiden merge pero deben corregirse).
+- **Menores** (estilo, nits).
+- **Preguntas abiertas** solo si no se pueden resolver con herramientas.
+- **Veredicto:** APROBADO | RECHAZADO | APROBADO CON CONDICIONES (listar condiciones).
 
-Observaciones menores.
+## Regla
 
-Preguntas abiertas.
+- ≥ **1 bloqueante** real → **RECHAZADO** (no suavizar).
 
-Veredicto final.
+## Restricciones
 
-Formato
+- Cada hallazgo **accionable** con **dónde** (ruta).
+- No duplicar el formato del agente Step 6: **respeta** la plantilla que el agente defina.
 
-Debe respetar estrictamente la estructura definida en el agente.
+## Anti-patrones
 
-Regla final
-
-Si existe al menos un bloqueante → bloquear commit.
+| Evitar | Hacer |
+| :--- | :--- |
+| “Varios problemas” sin lista | Tabla o lista numerada |
+| Veredicto verde con `[ ]` en tasks | RECHAZADO |

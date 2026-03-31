@@ -1,28 +1,38 @@
 ---
 name: epic-input-validator
-description: Valida que el archivo de épica o historia exista y tenga contenido antes de iniciar el análisis.
+description: Valida que existan insumos mínimos y texto accionable antes de iniciar el flujo de épica.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md) — no rellenes vacíos con inventiva.
 
-Verificar que el archivo proporcionado por el usuario exista y contenga información suficiente para ser analizado.
+## Objetivo
 
-Validaciones
+Comprobar que el usuario (o el mensaje) provea **entrada suficiente** para Step 1 sin asumir negocio inexistente.
 
-- El archivo indicado existe.
-- El archivo contiene texto.
-- El contenido describe una épica o historia funcional.
+## Validaciones (todas deben pasar)
 
-Si falla alguna validación:
+- Está definida la **intención** (épica / historia / problema) en texto no trivial.
+- Si se citó un archivo, **existe** y es legible (o el usuario pegó el contenido).
+- Hay al menos un **resultado observable** o restricción que permita redactar `proposal.md` sin adivinar.
 
-- Informar el error claramente.
-- No continuar el análisis.
+## Si falla alguna
 
-Restricciones
+- Devolvé **error concreto** (qué falta: archivo, objetivo, alcance).
+- **No** continúes con análisis profundo hasta corregir.
 
-No asumir contenido inexistente.
-No inferir épicas desde descripciones vagas.
+## Restricciones
 
-Salida esperada
+- No asumas alcance ni reglas de negocio no escritas.
+- No infieras épica desde una frase genérica sin pedir una aclaración **única y específica**.
 
-Confirmación de que el archivo es válido para análisis.
+## Salida esperada
+
+- `OK` + lista de supuestos explícitos que vas a usar, **o**
+- `BLOQUEADO` + lista de datos faltantes (mínima).
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| “Asumo que es un bug en checkout” | Pedir objetivo en una pregunta |
+| Continuar con placeholder | Bloquear hasta tener texto accionable |

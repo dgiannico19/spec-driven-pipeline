@@ -1,24 +1,34 @@
 ---
 name: code-style-enforcer
-description: Garantiza que el código generado respete las reglas estrictas de estilo.
+description: Aplica reglas estrictas de estilo al **nuevo** código del cambio; bloquea si el ticket exige cumplimiento.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md) — **blast radius**: solo líneas del alcance.
 
-Aplicar reglas de estilo obligatorias.
+## Objetivo
 
-Reglas
+Al implementar, **cumplir** las reglas del equipo en el código **tocado** (no reescribir archivos enteros por estilo).
 
-Funciones con const.
+## Reglas típicas (ajustar al equipo)
 
-Evitar if/else.
+- Funciones como `const` arrow.
+- Preferir guard clauses y early returns.
+- Evitar `if/else` cuando un early return basta.
+- Funciones pequeñas y responsabilidad única.
+- Claridad sobre astucia.
 
-Usar guard clauses.
+## Aplicación
 
-Funciones pequeñas.
+- **Nuevo** código: debe cumplir al 100%.
+- **Código existente** tocado: alinear solo lo necesario para el cambio (no “style-only” fuera de scope).
 
-Responsabilidad única.
+## Bloqueo
 
-Código claro y mantenible.
+- Si el ticket exige cumplimiento estricto y no es posible sin refactor grande → **escalar** al humano, no silenciar.
 
-Bloquear implementaciones que no cumplan.
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| Reformatear vecinos por “consistencia” | Solo líneas del diff |
+| Reglas conflictivas con repo | Priorizar `eslint` / `biome` del proyecto |

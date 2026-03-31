@@ -1,28 +1,39 @@
 ---
 name: qa-edge-case-expander
-description: Expande la cobertura QA detectando casos límite.
+description: Lista casos límite y negativos trazables a requisitos; sin duplicar happy path obvio.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Garantizar cobertura exhaustiva de edge cases.
+## Objetivo
 
-Detectar
+Ampliar cobertura **más allá del happy path** con casos **observables** y **vinculados** a SHALL/MUST o escenarios en `spec.md`.
 
-Payload vacío.
+## Detectar (según dominio)
 
-Valores máximos.
+- Payload vacío / nulo / tipos incorrectos.
+- Límites (min/max length, rangos).
+- Duplicados, idempotencia, reintentos.
+- Estados inválidos previos.
+- Errores de API / red / timeout (si aplica).
+- Permisos / roles (si spec lo menciona).
 
-Valores mínimos.
+## Resultado
 
-Duplicados.
+Lista de **edge cases** con:
 
-Reintentos.
+- ID sugerido (EDGE-01…)
+- Precondición
+- Acción
+- Resultado esperado **observable**
 
-Estados previos inválidos.
+## Restricciones
 
-Errores de API.
+- No inventes reglas de negocio no especificadas; marcá **supuesto** si completás hueco.
 
-Resultados
+## Anti-patrones
 
-Lista de escenarios edge que deben incluirse en la matriz QA.
+| Evitar | Hacer |
+| :--- | :--- |
+| 50 casos genéricos | Casos ligados a cada Requirement |
+| EDGE sin vínculo a spec | Referencia RF-XX / escenario |

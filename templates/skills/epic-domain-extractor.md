@@ -1,33 +1,39 @@
 ---
 name: epic-domain-extractor
-description: Extrae entidades, reglas de negocio y conceptos clave del dominio.
+description: Extrae entidades, reglas e invariantes del texto de la épica; sin reglas inventadas.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Detectar los elementos del dominio involucrados en la épica.
+## Objetivo
 
-Analizar
+Nombrar elementos de dominio **solo** si están en `proposal.md` / `spec.md` / mensaje del usuario (o contradicciones explícitas entre fuentes).
 
-Entidades principales.
+## Analizar
 
-Reglas de negocio explícitas.
+- Entidades nombradas o implícitas de forma inequívoca.
+- Reglas de negocio **citables** (texto literal o parafraseo marcado).
+- Estados e invariantes **dichos** en la spec.
 
-Estados relevantes de las entidades.
+## Restricciones
 
-Invariantes que deben mantenerse.
+- No inventes reglas “típicas del dominio” si no están escritas.
+- Marcá **inferencia débil** como supuesto, no como hecho.
 
-Restricciones
-
-No inventar reglas.
-No asumir comportamientos implícitos.
-
-Formato de salida
+## Formato de salida
 
 ## Entidades
 
-## Reglas de negocio
+## Reglas de negocio (con cita o referencia a sección)
 
 ## Estados relevantes
 
 ## Invariantes
+
+## Supuestos explícitos (si los hay)
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| “Como en e-commerce siempre…” | Solo texto de la épica |

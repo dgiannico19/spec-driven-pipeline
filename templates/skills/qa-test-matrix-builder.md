@@ -1,35 +1,32 @@
 ---
 name: qa-test-matrix-builder
-description: Construye la matriz completa de casos de prueba QA.
+description: Construye matriz de pruebas con IDs, tipo, pasos y resultado observable; trazable a CA.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Generar casos de prueba ejecutables.
+## Objetivo
 
-Cada caso debe incluir
+Generar filas **ejecutables** por QA o automatización, alineadas a **CA-XX** de `spec.md` y a `testing.md`.
 
-ID único.
+## Cada fila debe incluir
 
-Tipo de prueba.
+- **ID único** (ej. `QA-12`, `ERR-03`).
+- **Tipo:** HP | ALT | ERR | EDGE | PERM | STATE (u otra convención del equipo).
+- **Vista / superficie** (pantalla, API, CLI — lo que aplique).
+- **Precondiciones** (datos, usuario, flags).
+- **Dataset / mock** (si aplica; si no, “N/A”).
+- **Pasos** numerados.
+- **Resultado esperado** observable (texto, código HTTP, estado UI).
+- **Trazabilidad:** `CA-XX` o Requirement ID.
 
-Vista involucrada.
+## Restricciones
 
-Precondiciones.
+- No inventes CAs: deben existir en `spec.md` o estar marcados como **nuevo CA propuesto** con justificación.
 
-Dataset o mock utilizado.
+## Anti-patrones
 
-Pasos ejecutables.
-
-Resultado observable esperado.
-
-Verificación.
-
-Tipos permitidos
-
-HP – Happy Path  
-ALT – Flujo alternativo  
-ERR – Error / negativo  
-EDGE – Caso límite  
-PERM – Permisos  
-STATE – Estados previos
+| Evitar | Hacer |
+| :--- | :--- |
+| “Probar login” sin pasos | Pasos y dato de entrada |
+| Matriz sin link a CA | Columna CA-XX |

@@ -1,40 +1,49 @@
 ---
 name: technical-gap-analyzer
-description: Detecta brechas entre el análisis funcional (Step 1) y el comportamiento técnico existente.
+description: Detecta brechas entre lo pedido en spec/proposal y el código real; sin soluciones, con evidencia citada.
 ---
 
-Objetivo
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
 
-Identificar diferencias entre el dominio descrito en el Step 1 y el código real del repositorio.
+## Objetivo
 
-Comparar
+Comparar **requisitos documentados** (Step 1 / épica) con **hechos verificables en código** y listar **solo brechas**, no remedios.
 
-Entidades esperadas vs entidades existentes.
+## Cadena mínima
 
-Flujos esperados vs lógica implementada.
+1. Extraé requisitos citables de `spec.md` / `proposal.md` (IDs o SHALL/MUST).
+2. Por cada requisito o flujo, buscá en el repo **símbolo, ruta o test** que lo respalde.
+3. Clasificá: **ausente** | **parcial** (nombrá archivo + qué falta) | **presente** (ruta).
 
-Integraciones esperadas vs integraciones reales.
+## Comparar
 
-Detectar
+- Entidades / conceptos del dominio esperados vs tipos o módulos existentes.
+- Flujos descritos vs ramas o handlers encontrados.
+- Integraciones mencionadas vs clients/adapters reales.
 
-Partes del dominio que no existen en el código.
+## Detectar
 
-Lógica incompleta.
+- Huecos totales.
+- Implementación parcial (**archivo X** existe pero falta caso o rama).
+- Suposiciones del negocio no reflejadas en código.
 
-Suposiciones funcionales no soportadas técnicamente.
+## Restricciones
 
-**Parcialmente cubierto**: el requisito ya tiene implementación en **archivo X** pero falta caso o rama; no etiquetar como “hueco total” si se puede **extender**.
+- **No proponer soluciones** ni diseño — solo brecha y evidencia.
+- Cada brecha debe incluir **por qué** la considerás brecha (qué buscaste).
 
-Restricciones
-
-No proponer soluciones.
-
-Solo identificar brechas técnicas.
-
-Formato de salida
+## Formato de salida
 
 ## Brechas detectadas
+| Requisito / flujo | Estado | Evidencia (rutas o “no encontrado tras buscar X”) |
 
 ## Lógica faltante
 
-## Suposiciones inválidas
+## Suposiciones inválidas o no verificadas
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| “Falta validación” sin archivo revisado | Citar archivo leído o búsqueda vacía |
+| Brecha “total” si existe implementación parcial | Etiqueta **parcial** + extensión |

@@ -1,27 +1,38 @@
 ---
 name: task-completion-verifier
-description: Escanea exhaustivamente el archivo 'tasks.md' en busca de tareas pendientes o incompletas.
-
-logic:
-  - Cargar el archivo `specs/changes/[FOLDER-NAME]/tasks.md`.
-  - Aplicar un regex de búsqueda: `/-\s\[\s\]/g` (busca cualquier instancia de checkbox vacío).
-  - Contar el total de tareas (`[ ]` + `[x]`) vs. el total de completadas (`[x]`).
-  - Si el conteo de `[ ]` es mayor a 0:
-      - Extraer el texto de las tareas pendientes.
-      - Retornar estado: RECHAZADO con la lista de pendientes.
-  - Si todas son `[x]`:
-      - Retornar estado: CONFORME.
-
-rules:
-  - No permitir estados intermedios (ej: `[-]` o `[/]`). Solo `[x]` es válido para aprobación.
-  - Ignorar líneas que sean encabezados o comentarios que no sigan el formato de checkbox.
-  - Validar que el archivo no esté vacío.
-
-input:
-  folder_path: "specs/changes/YYYY-MM-DD-nombre-slug/"
-
-output:
-  status: "CONFORME | PENDIENTE"
-  pending_tasks: ["Lista de tareas que quedaron en [ ]"]
-  completion_percentage: "number"
+description: Verifica tasks.md con checkboxes; solo [x] cuenta como hecho; lista pendientes con precisión.
 ---
+
+> Baseline: [`templates/_shared/zero-guesswork-system.md`](../_shared/zero-guesswork-system.md).
+
+## Objetivo
+
+Determinar si queda **alguna** tarea `- [ ]` en `specs/changes/[FOLDER-NAME]/tasks.md` antes de aprobar cierre.
+
+## Procedimiento
+
+1. **Leer** el archivo real (no asumir contenido).
+2. Buscar líneas que coincidan con checkbox de tarea: `- [ ]` (con espacios opcionales).
+3. Ignorar líneas que sean código, citas o texto sin formato de lista de tareas.
+4. Contar `[ ]` vs `[x]`.
+5. Si hay `>` 0 `[ ]` → **RECHAZADO** (o PENDIENTE) con lista de líneas o IDs pendientes.
+
+## Reglas
+
+- Solo `[x]` cuenta como completado (no `[-]`, `[~]`, etc.).
+- No considerar archivo vacío como conforme.
+
+## Salida
+
+```text
+status: CONFORME | PENDIENTE
+pending_tasks: ["texto o ID de cada [ ]"]
+completion_percentage: número 0–100
+```
+
+## Anti-patrones
+
+| Evitar | Hacer |
+| :--- | :--- |
+| Aprobar “casi todo” | 100% [x] o PENDIENTE |
+| Regex sin leer archivo | Leer tasks.md completo |
