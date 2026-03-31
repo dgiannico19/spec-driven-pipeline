@@ -156,11 +156,18 @@ function anthropicMessagesToOpenAIChat(messages, system) {
  */
 function normalizeOpenAIToolCall(tc, index) {
   const fn = tc.function || tc.functions || {};
-  const name = fn.name || tc.name || "unknown";
+  const name =
+    (typeof fn.name === "string" && fn.name) ||
+    (typeof tc.name === "string" && tc.name) ||
+    "unknown";
   let input = {};
   try {
-    const arg = fn.arguments ?? tc.arguments ?? "{}";
-    input = typeof arg === "string" ? JSON.parse(arg || "{}") : arg;
+    const arg = fn.arguments ?? tc.arguments ?? tc.input ?? "{}";
+    if (typeof arg === "string") {
+      input = JSON.parse(arg && arg.trim() ? arg : "{}");
+    } else if (arg && typeof arg === "object") {
+      input = arg;
+    }
     if (!input || typeof input !== "object") input = {};
   } catch {
     input = {};
@@ -214,6 +221,47 @@ function tryParseToolUsesFromAssistantString(str) {
       });
       return out;
     }
+    /** Objeto plano tipo { "name": "write_file", "path": "...", ... } (Ollama / JSON suelto). */
+    if (
+      typeof j.name === "string" &&
+      j.name &&
+      registry[j.name] &&
+      !Array.isArray(j.tool_calls) &&
+      j.type !== "tool_use"
+    ) {
+      const reserved = new Set(["name", "id", "type", "tool_call_id"]);
+      const input = {};
+      for (const [k, v] of Object.entries(j)) {
+        if (!reserved.has(k)) input[k] = v;
+      }
+      out.push({
+        type: "tool_use",
+        id: j.id || j.tool_call_id || "call_flat_0",
+        name: j.name,
+        input,
+      });
+      return out;
+    }
+    /** Wrapper { "tool_call": { "name", "arguments" } } */
+    const single = j.tool_call;
+    if (single && typeof single === "object" && typeof single.name === "string") {
+      out.push(
+        normalizeOpenAIToolCall(
+          {
+            id: single.id,
+            function: {
+              name: single.name,
+              arguments:
+                typeof single.arguments === "string"
+                  ? single.arguments
+                  : JSON.stringify(single.arguments ?? single.input ?? {}),
+            },
+          },
+          0,
+        ),
+      );
+      return out;
+    }
   }
 
   if (Array.isArray(j)) {
@@ -240,7 +288,14 @@ function tryParseToolUsesFromAssistantString(str) {
 function collectToolUsesFromOpenAIMessage(msg) {
   /** @type {object[]} */
   const out = [];
-  const raw = msg.tool_calls || msg.tool_calls_list;
+  let raw = msg.tool_calls || msg.tool_calls_list;
+  if (typeof raw === "string") {
+    try {
+      raw = JSON.parse(raw);
+    } catch {
+      raw = null;
+    }
+  }
   if (Array.isArray(raw)) {
     raw.forEach((tc, i) => out.push(normalizeOpenAIToolCall(tc, i)));
   }
@@ -276,7 +331,7 @@ function openAIChatChoiceToAnthropicShape(data) {
   if (!msg) {
     throw new Error("Respuesta OpenAI-compat: sin message");
   }
-  const finish = choice.finish_reason ?? null;
+  const finish = choice.finish_reason ?? choice.finishReason ?? null;
 
   /** @type {object[]} */
   const content = [];
@@ -325,12 +380,47 @@ function openAIChatChoiceToAnthropicShape(data) {
     }
   }
 
+  /** Algunos backends colocan tool_calls en choice en lugar de message. */
+  let choiceLevel = choice.tool_calls ?? choice.tool_calls_list;
+  if (typeof choiceLevel === "string") {
+    try {
+      choiceLevel = JSON.parse(choiceLevel);
+    } catch {
+      choiceLevel = null;
+    }
+  }
+  if (Array.isArray(choiceLevel)) {
+    choiceLevel.forEach((tc, i) => {
+      const tu = normalizeOpenAIToolCall(tc, i);
+      if (!seenIds.has(tu.id)) {
+        content.push(tu);
+        seenIds.add(tu.id);
+      }
+    });
+  }
+
   if (!content.some((b) => b.type === "tool_use") && typeof msg.content === "string") {
     const embedded = tryParseToolUsesFromAssistantString(msg.content);
     for (const tu of embedded) {
       if (!seenIds.has(tu.id)) {
         content.push(tu);
         seenIds.add(tu.id);
+      }
+    }
+  }
+
+  if (!content.some((b) => b.type === "tool_use") && Array.isArray(msg.content)) {
+    const textBlob = msg.content
+      .filter((p) => p?.type === "text" && typeof p.text === "string")
+      .map((p) => p.text)
+      .join("\n");
+    if (textBlob.trim()) {
+      const embedded = tryParseToolUsesFromAssistantString(textBlob);
+      for (const tu of embedded) {
+        if (!seenIds.has(tu.id)) {
+          content.push(tu);
+          seenIds.add(tu.id);
+        }
       }
     }
   }
@@ -445,6 +535,16 @@ function shouldNudgeContinuation(text, stopReason, nudgeCount, maxNudgeAttempts)
  * @param {object} assistantMessage
  * @param {{ cwd: string }} cfg
  */
+function formatToolArgsForLog(input) {
+  try {
+    const s = JSON.stringify(input);
+    if (s.length > 2000) return `${s.slice(0, 2000)}…(truncado)`;
+    return s;
+  } catch {
+    return String(input);
+  }
+}
+
 async function executeToolUses(assistantMessage, cfg) {
   const content = assistantMessage.content;
   if (!Array.isArray(content)) return [];
@@ -461,6 +561,9 @@ async function executeToolUses(assistantMessage, cfg) {
     let text;
     let isError = false;
     try {
+      console.error(
+        `[TOOL] Executing ${name} with args ${formatToolArgsForLog(input)}`,
+      );
       if (!def) {
         throw new Error(`Herramienta desconocida: ${name}`);
       }
@@ -559,6 +662,10 @@ async function runAgentLoop(params) {
   const messages = [...initialMessages];
   let turn = 0;
   let nudgeCount = 0;
+  let toolParseRecoveryCount = 0;
+  const maxToolParseRecovery = Number(
+    process.env.SPEC_AGENT_TOOL_PARSE_RETRIES || 4,
+  );
   /** @type {'none' | 'awaiting_pass' | 'passed'} */
   let verificationState = "none";
   let gapRound = 0;
@@ -645,7 +752,28 @@ async function runAgentLoop(params) {
       continue;
     }
 
-    if (stopReason === "tool_use") {
+    if (stopReason === "tool_use" && !needsFollowUp) {
+      if (toolParseRecoveryCount < maxToolParseRecovery) {
+        toolParseRecoveryCount += 1;
+        console.error(
+          `[agent] stop_reason=tool_use sin bloques tool_use parseables; reintento ${toolParseRecoveryCount}/${maxToolParseRecovery} (pedir formato explícito al modelo).`,
+        );
+        messages.push({
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: [
+                "[Agent runtime — tool parsing]",
+                "El backend indicó uso de herramientas (p. ej. finish_reason tool_calls) pero no se pudieron parsear invocaciones.",
+                "Volvé a emitir las herramientas con los nombres exactos del esquema (read_text_file, write_file, list_directory, str_replace_edit) y argumentos JSON válidos.",
+                "Si el servidor espera tool_calls nativos, no sustituyas eso por solo texto; si solo podés escribir JSON, usá un objeto con \"tool_calls\": [ { \"id\": \"…\", \"type\": \"function\", \"function\": { \"name\": \"…\", \"arguments\": \"{…}\" } } ].",
+              ].join("\n"),
+            },
+          ],
+        });
+        continue;
+      }
       return {
         messages,
         lastResponse: response,
@@ -656,7 +784,7 @@ async function runAgentLoop(params) {
         gapRound,
         completed: false,
         warning:
-          "La API marcó tool_use pero no hay bloques tool_use parseables; revisá el formato de respuesta del backend.",
+          "La API marcó tool_use pero no hay bloques tool_use parseables tras reintentos; revisá el formato de respuesta del backend.",
       };
     }
 

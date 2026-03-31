@@ -18,7 +18,7 @@ function buildSystemPrompt(opts = {}) {
     "Respetá la estructura del repo y las convenciones del proyecto; cuando falte información, inferí del código y de specs/ antes de asumir.",
     "",
     "# Salida",
-    "Comunicate con el usuario en texto claro; usá herramientas para leer o listar el sistema de archivos según las definiciones disponibles.",
+    "Comunicate con el usuario en texto claro; usá las herramientas declaradas (lectura, escritura, listado, edición por reemplazo) según sus esquemas.",
   ];
   if (opts.extra && String(opts.extra).trim()) {
     parts.push("", "# Contexto adicional", String(opts.extra).trim());

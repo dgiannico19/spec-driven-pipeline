@@ -4,6 +4,7 @@
  */
 
 const READ_TEXT_FILE_NAME = "read_text_file";
+const WRITE_FILE_NAME = "write_file";
 const LIST_DIR_NAME = "list_directory";
 const STR_REPLACE_EDIT_NAME = "str_replace_edit";
 
@@ -15,6 +16,15 @@ Uso:
 - No inventes contenido si el archivo no existe: reportá el error tal cual.
 - Preferí leer solo lo necesario si el usuario indicó límites; si no, leé el archivo completo para archivos razonables.`;
 
+const writeFilePrompt = `Escribe texto en el disco del workspace.
+
+Uso:
+- path: ruta absoluta o relativa al directorio de trabajo del agente (process.cwd del proyecto); se resuelve con path.resolve(cwd, path).
+- content: cuerpo completo del archivo en UTF-8.
+- create_parent_dirs (opcional, default true): si true, crea directorios padre con mkdir recursivo antes de escribir.
+
+Para archivos ya existentes preferí str_replace_edit cuando solo necesitás un cambio local; usá write_file para archivos nuevos o reemplazos completos deliberados.`;
+
 const listDirectoryPrompt = `Lista entradas de un directorio (no recursivo por defecto).
 
 Uso:
@@ -24,6 +34,8 @@ Uso:
 - Devuelve nombres y tipo (archivo/directorio), no contenido.`;
 
 const readTextFileSummary = "Lee el contenido UTF-8 de un archivo de texto.";
+const writeFileSummary =
+  "Crea o sobrescribe un archivo de texto UTF-8 (crea directorios padre si hace falta).";
 const listDirectorySummary = "Lista archivos y subdirectorios bajo una ruta.";
 
 const strReplaceEditSummary =
@@ -48,11 +60,14 @@ No uses esta herramienta para archivos binarios.`;
 
 module.exports = {
   READ_TEXT_FILE_NAME,
+  WRITE_FILE_NAME,
   LIST_DIR_NAME,
   STR_REPLACE_EDIT_NAME,
   readTextFilePrompt,
+  writeFilePrompt,
   listDirectoryPrompt,
   readTextFileSummary,
+  writeFileSummary,
   listDirectorySummary,
   strReplaceEditSummary,
   strReplaceEditPrompt,

@@ -2,11 +2,14 @@ const fs = require("fs/promises");
 const path = require("path");
 const {
   READ_TEXT_FILE_NAME,
+  WRITE_FILE_NAME,
   LIST_DIR_NAME,
   STR_REPLACE_EDIT_NAME,
   readTextFilePrompt,
+  writeFilePrompt,
   listDirectoryPrompt,
   readTextFileSummary,
+  writeFileSummary,
   listDirectorySummary,
   strReplaceEditPrompt,
   strReplaceEditSummary,
@@ -49,6 +52,30 @@ async function readTextFile(input, ctx) {
   const abs = path.isAbsolute(raw) ? raw : path.resolve(ctx.cwd, raw);
   const data = await fs.readFile(abs, "utf8");
   return data;
+}
+
+async function writeTextFile(input, ctx) {
+  const raw = input.path;
+  if (!raw || typeof raw !== "string") {
+    throw new Error("path es obligatorio");
+  }
+  if (typeof input.content !== "string") {
+    throw new Error("content es obligatorio (string UTF-8)");
+  }
+  const abs = path.isAbsolute(raw) ? raw : path.resolve(ctx.cwd, raw);
+  const createParents =
+    input.create_parent_dirs !== undefined
+      ? Boolean(input.create_parent_dirs)
+      : true;
+  if (createParents) {
+    await fs.mkdir(path.dirname(abs), { recursive: true });
+  }
+  await fs.writeFile(abs, input.content, "utf8");
+  return [
+    "OK: archivo escrito.",
+    `Ruta absoluta: ${abs}`,
+    `Bytes (UTF-8): ${Buffer.byteLength(input.content, "utf8")}.`,
+  ].join("\n");
 }
 
 async function listDirectory(input, ctx) {
@@ -129,6 +156,33 @@ register({
     required: ["path"],
   },
   run: readTextFile,
+});
+
+register({
+  name: WRITE_FILE_NAME,
+  summary: writeFileSummary,
+  prompt: writeFilePrompt,
+  input_schema: {
+    type: "object",
+    properties: {
+      path: {
+        type: "string",
+        description:
+          "Ruta del archivo (absoluta o relativa al cwd del proyecto).",
+      },
+      content: {
+        type: "string",
+        description: "Contenido completo del archivo en UTF-8.",
+      },
+      create_parent_dirs: {
+        type: "boolean",
+        description:
+          "Si true (default), crea directorios padre antes de escribir.",
+      },
+    },
+    required: ["path", "content"],
+  },
+  run: writeTextFile,
 });
 
 register({
