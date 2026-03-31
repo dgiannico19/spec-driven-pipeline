@@ -1,14 +1,8 @@
 # Spec-Driven Pipeline
 
 [![npm](https://img.shields.io/npm/v/spec-driven-pipeline.svg)](https://www.npmjs.com/package/spec-driven-pipeline)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node](https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
 **Framework CLI para equipos que quieren IA que *ejecute*, no solo converse.** Un único paquete npm combina **descubrimiento automático del repositorio**, **33 skills documentadas** bajo el estándar **Zero-Guesswork** y un **agente autónomo** que llama herramientas en bucle, puede alinearse a tus **specs en Markdown** y cerrar con verificación explícita.
-
-> **npmjs.com:** el visor de Markdown del registro es más estricto que GitHub. Este README evita tablas con pipes (`|`) porque suelen romper el render y dejan la página en blanco. El contenido es el mismo.
-
----
 
 ## Propuesta de valor: un agente de software, no un chat
 
@@ -28,20 +22,18 @@
 
 En la práctica: escribís o mantenés specs en `.md`, **mapeás el proyecto** con `run`, y **delegás la ejecución** al comando `agent`.
 
----
-
 ## Arquitectura: nube (Anthropic) vs local (OpenAI-compatible)
 
-El runtime usa **`fetch` nativo (Node 18+)** y un solo mecanismo de transporte según entorno:
+El runtime usa **`fetch` nativo (Node 18+)** y un solo mecanismo de transporte según entorno.
 
-**Cloud (Anthropic)**
+### Cloud (Anthropic)
 
 - Uso: máxima calidad en razonamiento y tool calling estable.
 - Endpoint: API oficial Messages (`api.anthropic.com`).
 - Variable: `ANTHROPIC_API_KEY` (obligatoria si no usás `API_BASE_URL`).
 - Modelos: **Claude** (por ejemplo `claude-3-5-sonnet-20241022`; default del paquete `claude-sonnet-4-20250514` vía `ANTHROPIC_MODEL`).
 
-**Local / OpenAI-compatible (Ollama, vLLM, Groq, OpenAI, gateways)**
+### Local / OpenAI-compatible (Ollama, vLLM, Groq, OpenAI, gateways)
 
 - Uso: privacidad, coste cero en hardware propio, entornos air-gapped.
 - Endpoint: base que exponga **`/v1/chat/completions`** (ejemplo Ollama: `http://127.0.0.1:11434/v1`).
@@ -50,8 +42,6 @@ El runtime usa **`fetch` nativo (Node 18+)** y un solo mecanismo de transporte s
 - Bearer opcional: `OPENAI_API_KEY`, `API_KEY` o `ANTHROPIC_API_KEY` si el servidor lo exige (Ollama local suele ir sin token).
 
 **Un solo flujo en tu repo:** solo cambiás variables de entorno y el modelo.
-
----
 
 ## Comandos
 
@@ -89,9 +79,7 @@ Logs de turnos en stderr:
 SPEC_AGENT_VERBOSE=1 npx spec-driven-pipeline agent "Tu instrucción"
 ```
 
-**Skills (33 plantillas)** en `templates/skills/`, alineadas a [Zero-Guesswork](templates/_shared/zero-guesswork-system.md): arquitectura FSD, épicas, QA, riesgo, repo, estilo, diffs, commits, etc. El CLI usa **herramientas de código**; las skills son el catálogo para flujos en el IDE.
-
----
+**Skills (33 plantillas)** en `templates/skills/`, alineadas a [Zero-Guesswork](https://github.com/dgiannico19/spec-driven-pipeline/blob/master/templates/_shared/zero-guesswork-system.md): arquitectura FSD, épicas, QA, riesgo, repo, estilo, diffs, commits, etc. El CLI usa **herramientas de código**; las skills son el catálogo para flujos en el IDE.
 
 ## Zero-Guesswork y VERIFICATION_PASS
 
@@ -99,17 +87,13 @@ SPEC_AGENT_VERBOSE=1 npx spec-driven-pipeline agent "Tu instrucción"
 - **Contexto antes que alucinar:** listar y leer con herramientas.
 - **Cierre con spec:** con `--spec`, el bucle puede pedir releer la spec; el proceso termina cuando el texto incluye **`VERIFICATION_PASS`** o se agotan las rondas de remediación.
 
-Baseline: [`templates/_shared/zero-guesswork-system.md`](templates/_shared/zero-guesswork-system.md)
-
----
+Baseline: [zero-guesswork-system.md](https://github.com/dgiannico19/spec-driven-pipeline/blob/master/templates/_shared/zero-guesswork-system.md)
 
 ## Flujo de trabajo
 
 1. Escribir o actualizar la spec (`.md` bajo tu convención en `specs/`).
 2. `npx spec-driven-pipeline run` para `specs/project-context.md` y el índice de skills.
 3. `npx spec-driven-pipeline agent "..."` (opcional `--spec` para verificación).
-
----
 
 ## Ollama (local)
 
@@ -122,8 +106,6 @@ npx spec-driven-pipeline agent "Listá el directorio src/ con profundidad máxim
 ```
 
 `ANTHROPIC_MODEL` es el nombre del modelo **en el servidor** (no solo Anthropic). El modelo debe soportar **tool calling**. Más ayuda en la sección **Troubleshooting** abajo.
-
----
 
 ## Variables de entorno
 
@@ -139,31 +121,27 @@ npx spec-driven-pipeline agent "Listá el directorio src/ con profundidad máxim
 
 Con `API_BASE_URL` (Ollama local), la clave de Anthropic deja de ser obligatoria.
 
----
-
 ## Troubleshooting
 
-**Ollama y memoria**
+### Ollama y memoria
 
 - Proceso muerto u OOM: probá un modelo más chico (`qwen2.5-coder:1.5b` vs `3b`) o más cuantizado.
 - Sistema lento: cerrar otras apps; no competir por RAM con builds enormes en paralelo.
 - Errores CUDA / VRAM: modelo menor, más cuantización, o CPU en Ollama.
 
-**Tool calling**
+### Tool calling
 
 - Verificá soporte con `ollama show <modelo>`.
 - El backend debe devolver `tool_calls` en el mensaje del asistente (esquema OpenAI).
 
-**El agente corta muy pronto**
+### El agente corta muy pronto
 
 - Aumentá `SPEC_AGENT_MAX_TURNS` con cuidado.
 - Usá `SPEC_AGENT_VERBOSE=1`.
 
-**API_BASE_URL**
+### API_BASE_URL
 
 - Debe ser la raíz tipo OpenAI (`https://host/v1` o `http://127.0.0.1:11434/v1`). El CLI agrega `/chat/completions` si falta.
-
----
 
 ## Instalación y docs
 
@@ -173,13 +151,11 @@ npx spec-driven-pipeline init
 npx spec-driven-pipeline run
 ```
 
-- [docs/guia-equipos.md](docs/guia-equipos.md)
-- [docs/spec-formato-unificado.md](docs/spec-formato-unificado.md)
-- [templates/spec-unified-template.md](templates/spec-unified-template.md)
-- [templates/_shared/zero-guesswork-system.md](templates/_shared/zero-guesswork-system.md)
-
----
+- [guia-equipos.md](https://github.com/dgiannico19/spec-driven-pipeline/blob/master/docs/guia-equipos.md)
+- [spec-formato-unificado.md](https://github.com/dgiannico19/spec-driven-pipeline/blob/master/docs/spec-formato-unificado.md)
+- [spec-unified-template.md](https://github.com/dgiannico19/spec-driven-pipeline/blob/master/templates/spec-unified-template.md)
+- [zero-guesswork-system.md](https://github.com/dgiannico19/spec-driven-pipeline/blob/master/templates/_shared/zero-guesswork-system.md)
 
 ## Licencia
 
-**MIT** — ver [LICENSE](LICENSE).
+**MIT** — ver [LICENSE](https://github.com/dgiannico19/spec-driven-pipeline/blob/master/LICENSE).
